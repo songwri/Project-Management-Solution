@@ -42,7 +42,7 @@ jobs:
         working-directory: apps/web
         env:
           # Repo name -> GitHub Pages base path. Update if the repo is renamed.
-          VITE_BASE_PATH: /project-management-solution/
+          VITE_BASE_PATH: /Project-Management-Solution/
           # Set the PM_API_BASE repository variable to the deployed Worker
           # URL (apps/worker) once it's live to switch the app from demo
           # mode to real GitHub-backed storage. Leave unset to keep the
