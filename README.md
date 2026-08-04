@@ -1,5 +1,7 @@
 # 프로젝트 관리 포트폴리오 솔루션
 
+[![Deploy to GitHub Pages](https://github.com/songwri/project-management-solution/actions/workflows/deploy.yml/badge.svg)](https://github.com/songwri/project-management-solution/actions/workflows/deploy.yml)
+
 동시에 진행되는 여러 프로젝트의 **세부 일정**과 **포트폴리오(통합) 일정**을
 캘린더/간트 차트로 시각화하고, 프로젝트별로 개요·범위·회의록·산출물·진행
 현황을 관리하다가 **산출물 등록으로 프로젝트를 종료**하는 흐름까지 지원하는
