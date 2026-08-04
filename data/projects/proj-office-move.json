@@ -1,0 +1,44 @@
+{
+  "id": "proj-office-move",
+  "name": "본사 사무실 이전",
+  "status": "closed",
+  "color": "#7c3aed",
+  "overview": {
+    "objective": "본사를 신사옥으로 이전하고 업무 공백을 최소화",
+    "sponsor": "경영지원본부장 유재석",
+    "manager": "조현우",
+    "members": ["조현우", "배수진"],
+    "startDate": "2026-03-02",
+    "endDate": "2026-05-29"
+  },
+  "scope": {
+    "inScope": ["이전 계획 수립", "인프라(네트워크/전화) 이전", "이사 실행"],
+    "outOfScope": ["인테리어 설계 변경"],
+    "plannedDeliverables": ["이전 계획서", "이전 완료 보고서"]
+  },
+  "schedule": [
+    { "id": "t1", "name": "이전 계획 수립", "start": "2026-03-02", "end": "2026-03-20", "progress": 100, "category": "task" },
+    { "id": "t2", "name": "인프라 이전 준비", "start": "2026-04-06", "end": "2026-05-08", "progress": 100, "category": "task" },
+    { "id": "t3", "name": "이사 실행(주말)", "start": "2026-05-16", "end": "2026-05-17", "progress": 100, "category": "task" },
+    { "id": "t4", "name": "신사옥 업무 개시", "start": "2026-05-18", "end": "2026-05-18", "progress": 100, "category": "milestone" },
+    { "id": "t5", "name": "프로젝트 종료", "start": "2026-05-29", "end": "2026-05-29", "progress": 100, "category": "milestone" }
+  ],
+  "meetingMinutes": [
+    {
+      "id": "m1",
+      "date": "2026-05-20",
+      "title": "이전 완료 점검",
+      "attendees": ["조현우", "배수진", "유재석"],
+      "agenda": "이전 후 이슈 점검",
+      "decisions": "네트워크 이슈 2건 해결 완료, 프로젝트 종료 승인",
+      "actionItems": []
+    }
+  ],
+  "deliverables": [
+    { "id": "d1", "name": "이전 완료 보고서", "type": "결과 보고서", "status": "approved", "link": "https://github.com/songwri/project-management-solution/blob/main/deliverables/proj-office-move/final-report.pdf", "submittedBy": "조현우", "submittedAt": "2026-05-27" }
+  ],
+  "progressLog": [
+    { "id": "p1", "date": "2026-05-29", "percentComplete": 100, "summary": "이전 완료 및 프로젝트 종료" }
+  ],
+  "updatedAt": "2026-05-29T18:00:00+09:00"
+}

@@ -1,0 +1,68 @@
+{
+  "id": "proj-crm-revamp",
+  "name": "CRM 시스템 고도화",
+  "status": "in_progress",
+  "color": "#2563eb",
+  "overview": {
+    "objective": "노후화된 CRM을 재구축하여 영업 파이프라인 관리 효율을 30% 개선",
+    "sponsor": "영업본부장 김도윤",
+    "manager": "박서연",
+    "members": ["박서연", "이준호", "최민아", "정하늘"],
+    "startDate": "2026-06-01",
+    "endDate": "2026-10-31",
+    "budget": "1억 2천만원",
+    "background": "기존 CRM은 2019년 도입 이후 커스터마이징이 누적되어 유지보수가 어렵고, 모바일 환경을 지원하지 않음."
+  },
+  "scope": {
+    "inScope": ["영업 파이프라인 재설계", "모바일 웹 지원", "기존 데이터 마이그레이션", "사용자 교육"],
+    "outOfScope": ["마케팅 자동화 연동(2단계로 이관)", "타사 ERP 완전 통합"],
+    "plannedDeliverables": ["요구사항 정의서", "화면설계서(WBS)", "마이그레이션 결과보고서", "사용자 매뉴얼"],
+    "constraints": "기존 시스템과 3개월간 병행 운영 필요"
+  },
+  "schedule": [
+    { "id": "t1", "name": "요구사항 분석", "start": "2026-06-01", "end": "2026-06-19", "progress": 100, "category": "task", "assignee": "박서연" },
+    { "id": "t2", "name": "요구사항 정의서 확정", "start": "2026-06-19", "end": "2026-06-19", "progress": 100, "category": "milestone" },
+    { "id": "t3", "name": "화면 설계", "start": "2026-06-22", "end": "2026-07-17", "progress": 100, "category": "task", "assignee": "이준호", "dependsOn": ["t1"] },
+    { "id": "t4", "name": "개발 - 파이프라인 모듈", "start": "2026-07-06", "end": "2026-08-21", "progress": 65, "category": "task", "assignee": "최민아", "dependsOn": ["t3"] },
+    { "id": "t5", "name": "개발 - 모바일 UI", "start": "2026-07-13", "end": "2026-08-28", "progress": 40, "category": "task", "assignee": "정하늘", "dependsOn": ["t3"] },
+    { "id": "t6", "name": "데이터 마이그레이션 리허설", "start": "2026-08-24", "end": "2026-09-04", "progress": 0, "category": "task", "dependsOn": ["t4"] },
+    { "id": "t7", "name": "통합 테스트", "start": "2026-09-07", "end": "2026-09-25", "progress": 0, "category": "task", "dependsOn": ["t5", "t6"] },
+    { "id": "t8", "name": "사용자 교육", "start": "2026-09-28", "end": "2026-10-09", "progress": 0, "category": "task" },
+    { "id": "t9", "name": "운영 전환(Go-Live)", "start": "2026-10-19", "end": "2026-10-19", "progress": 0, "category": "milestone", "dependsOn": ["t7", "t8"] },
+    { "id": "t10", "name": "프로젝트 종료 보고", "start": "2026-10-31", "end": "2026-10-31", "progress": 0, "category": "milestone" }
+  ],
+  "meetingMinutes": [
+    {
+      "id": "m1",
+      "date": "2026-07-14",
+      "title": "화면설계 검토 회의",
+      "attendees": ["박서연", "이준호", "김도윤"],
+      "agenda": "파이프라인 화면 시안 리뷰 및 모바일 대응 범위 확정",
+      "decisions": "모바일은 반응형 웹으로 진행, 네이티브 앱은 2단계 검토",
+      "actionItems": [
+        { "id": "a1", "description": "반응형 화면설계서 보완", "owner": "이준호", "dueDate": "2026-07-21", "done": true },
+        { "id": "a2", "description": "모바일 UX 벤치마킹 자료 공유", "owner": "정하늘", "dueDate": "2026-07-18", "done": true }
+      ]
+    },
+    {
+      "id": "m2",
+      "date": "2026-07-30",
+      "title": "개발 중간 점검",
+      "attendees": ["박서연", "최민아", "정하늘"],
+      "agenda": "파이프라인/모바일 UI 개발 진척 점검",
+      "decisions": "마이그레이션 리허설 일정을 1주 앞당기기로 함",
+      "actionItems": [
+        { "id": "a3", "description": "마이그레이션 스크립트 초안 작성", "owner": "최민아", "dueDate": "2026-08-14", "done": false }
+      ]
+    }
+  ],
+  "deliverables": [
+    { "id": "d1", "name": "요구사항 정의서 v1.0", "type": "요구사항 문서", "status": "approved", "link": "https://github.com/songwri/project-management-solution/blob/main/deliverables/proj-crm-revamp/requirements-v1.0.pdf", "submittedBy": "박서연", "submittedAt": "2026-06-20" },
+    { "id": "d2", "name": "화면설계서", "type": "설계 문서", "status": "approved", "link": "https://github.com/songwri/project-management-solution/blob/main/deliverables/proj-crm-revamp/ui-design.pdf", "submittedBy": "이준호", "submittedAt": "2026-07-18" }
+  ],
+  "progressLog": [
+    { "id": "p1", "date": "2026-07-01", "percentComplete": 20, "summary": "요구사항 분석 및 화면설계 완료" },
+    { "id": "p2", "date": "2026-08-01", "percentComplete": 45, "summary": "파이프라인/모바일 UI 개발 진행 중" }
+  ],
+  "updatedAt": "2026-08-01T09:00:00+09:00"
+}

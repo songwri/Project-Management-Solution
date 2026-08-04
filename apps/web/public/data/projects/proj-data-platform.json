@@ -1,0 +1,50 @@
+{
+  "id": "proj-data-platform",
+  "name": "사내 데이터 분석 플랫폼 구축",
+  "status": "closing",
+  "color": "#d97706",
+  "overview": {
+    "objective": "부서별 산재된 데이터를 통합하여 셀프서비스 리포팅 환경 제공",
+    "sponsor": "전략기획실장 한지민",
+    "manager": "최민아",
+    "members": ["최민아", "조현우", "배수진"],
+    "startDate": "2026-02-02",
+    "endDate": "2026-08-14",
+    "budget": "2억원"
+  },
+  "scope": {
+    "inScope": ["데이터 웨어하우스 구축", "BI 대시보드", "권한 관리 체계"],
+    "outOfScope": ["실시간 스트리밍 분석", "AI 예측 모델"],
+    "plannedDeliverables": ["아키텍처 설계서", "데이터 사전", "운영 매뉴얼", "최종 결과보고서"]
+  },
+  "schedule": [
+    { "id": "t1", "name": "요구사항/아키텍처 설계", "start": "2026-02-02", "end": "2026-03-06", "progress": 100, "category": "task" },
+    { "id": "t2", "name": "데이터 웨어하우스 구축", "start": "2026-03-09", "end": "2026-05-08", "progress": 100, "category": "task", "dependsOn": ["t1"] },
+    { "id": "t3", "name": "BI 대시보드 개발", "start": "2026-05-11", "end": "2026-06-26", "progress": 100, "category": "task", "dependsOn": ["t2"] },
+    { "id": "t4", "name": "부서별 파일럿 적용", "start": "2026-06-29", "end": "2026-07-24", "progress": 100, "category": "task" },
+    { "id": "t5", "name": "전사 오픈", "start": "2026-07-27", "end": "2026-07-27", "progress": 100, "category": "milestone" },
+    { "id": "t6", "name": "최종 결과보고 및 산출물 등록", "start": "2026-08-10", "end": "2026-08-14", "progress": 60, "category": "task" }
+  ],
+  "meetingMinutes": [
+    {
+      "id": "m1",
+      "date": "2026-07-28",
+      "title": "전사 오픈 회고",
+      "attendees": ["최민아", "조현우", "배수진", "한지민"],
+      "agenda": "오픈 결과 리뷰 및 잔여 이슈 확인",
+      "decisions": "잔여 이슈 2건은 8/10까지 해결 후 최종 보고서 작성",
+      "actionItems": [
+        { "id": "a1", "description": "최종 결과보고서 작성", "owner": "최민아", "dueDate": "2026-08-12", "done": false }
+      ]
+    }
+  ],
+  "deliverables": [
+    { "id": "d1", "name": "데이터 아키텍처 설계서", "type": "설계 문서", "status": "approved", "link": "https://github.com/songwri/project-management-solution/blob/main/deliverables/proj-data-platform/architecture.pdf", "submittedBy": "최민아", "submittedAt": "2026-03-10" },
+    { "id": "d2", "name": "운영 매뉴얼", "type": "매뉴얼", "status": "approved", "link": "https://github.com/songwri/project-management-solution/blob/main/deliverables/proj-data-platform/ops-manual.pdf", "submittedBy": "조현우", "submittedAt": "2026-07-25" }
+  ],
+  "progressLog": [
+    { "id": "p1", "date": "2026-07-01", "percentComplete": 85, "summary": "BI 대시보드 개발 완료, 파일럿 적용 중" },
+    { "id": "p2", "date": "2026-08-01", "percentComplete": 95, "summary": "전사 오픈 완료, 최종 보고서 작성 중" }
+  ],
+  "updatedAt": "2026-08-01T09:00:00+09:00"
+}

@@ -1,0 +1,42 @@
+{
+  "id": "proj-vendor-eval",
+  "name": "협력사 평가 시스템 개선",
+  "status": "on_hold",
+  "color": "#dc2626",
+  "overview": {
+    "objective": "협력사 정기 평가 프로세스를 표준화하고 자동 채점 체계 도입",
+    "sponsor": "구매팀장 강수정",
+    "manager": "배수진",
+    "members": ["배수진"],
+    "startDate": "2026-05-04",
+    "endDate": "2026-09-30",
+    "background": "예산 재검토로 인해 6월부터 일시 보류 중"
+  },
+  "scope": {
+    "inScope": ["평가 기준 표준화", "자동 채점 시트"],
+    "outOfScope": ["협력사 포털 신규 구축"],
+    "plannedDeliverables": ["평가 기준서", "자동 채점 시트"]
+  },
+  "schedule": [
+    { "id": "t1", "name": "현행 프로세스 분석", "start": "2026-05-04", "end": "2026-05-22", "progress": 100, "category": "task" },
+    { "id": "t2", "name": "평가 기준 표준화(보류)", "start": "2026-06-01", "end": "2026-06-26", "progress": 20, "category": "task" }
+  ],
+  "meetingMinutes": [
+    {
+      "id": "m1",
+      "date": "2026-06-10",
+      "title": "예산 재검토에 따른 프로젝트 보류 안내",
+      "attendees": ["배수진", "강수정"],
+      "agenda": "하반기 예산 재검토 관련 프로젝트 진행 여부 논의",
+      "decisions": "3분기 예산 확정 후 재개 여부 결정",
+      "actionItems": [
+        { "id": "a1", "description": "3분기 예산 확정 시 재개 여부 확인", "owner": "배수진", "dueDate": "2026-09-01", "done": false }
+      ]
+    }
+  ],
+  "deliverables": [],
+  "progressLog": [
+    { "id": "p1", "date": "2026-06-10", "percentComplete": 20, "summary": "예산 재검토로 프로젝트 보류" }
+  ],
+  "updatedAt": "2026-06-10T09:00:00+09:00"
+}

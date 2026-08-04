@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #f8fafc;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+/* FullCalendar theming to match the app's design language */
+.fc {
+  --fc-border-color: #e2e8f0;
+  --fc-today-bg-color: #eff6ff;
+  --fc-neutral-bg-color: #f8fafc;
+  font-family: inherit;
+  font-size: 0.8125rem;
+}
+.fc .fc-toolbar-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.fc .fc-button {
+  background: white;
+  border: 1px solid #cbd5e1;
+  color: #334155;
+  box-shadow: none;
+  text-transform: none;
+  padding: 0.3rem 0.7rem;
+}
+.fc .fc-button:hover {
+  background: #f1f5f9;
+}
+.fc .fc-button-primary:not(:disabled).fc-button-active,
+.fc .fc-button-primary:not(:disabled):active {
+  background: #1e293b;
+  border-color: #1e293b;
+  color: white;
+}
+.fc .fc-daygrid-day-number,
+.fc .fc-col-header-cell-cushion {
+  color: #475569;
+}
+.fc-event {
+  cursor: pointer;
+  border: none;
+}
+
+/* frappe-gantt theming */
+.gantt-container {
+  overflow-x: auto;
+  width: 100%;
+}
+.gantt .grid-background {
+  fill: white;
+}
+.gantt .bar-progress {
+  fill: #3b82f6;
+}
+.gantt .bar {
+  fill: #dbeafe;
+  stroke: #93c5fd;
+}
+.gantt .bar-label {
+  fill: #1e293b;
+}

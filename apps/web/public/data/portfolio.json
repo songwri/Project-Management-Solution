@@ -1,0 +1,11 @@
+{
+  "name": "2026년 사업부 프로젝트 포트폴리오",
+  "description": "동시 진행 중인 전 프로젝트의 통합 일정 및 진행 현황",
+  "projectIds": [
+    "proj-crm-revamp",
+    "proj-mobile-app",
+    "proj-data-platform",
+    "proj-office-move",
+    "proj-vendor-eval"
+  ]
+}

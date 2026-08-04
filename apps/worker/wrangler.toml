@@ -1,0 +1,18 @@
+name = "pm-solution-api"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# Non-secret configuration. Override per-environment with `wrangler.toml`
+# [env.*] blocks, or just edit these before first deploy.
+[vars]
+GITHUB_OWNER = "songwri"
+GITHUB_REPO = "project-management-solution"
+GITHUB_BRANCH = "main"
+DATA_PATH_PREFIX = "data"
+ALLOWED_ORIGIN = "https://songwri.github.io"
+
+# Secrets (set via `wrangler secret put <NAME>`, never committed):
+#   GITHUB_TOKEN  - fine-grained PAT or GitHub App installation token with
+#                   "Contents: Read and write" on the repo above
+#   ACCESS_TOKEN  - shared team access code checked against the
+#                   Authorization: Bearer header from the web app

@@ -1,0 +1,67 @@
+name: Deploy web app to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/web/**"
+      - "data/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: apps/web
+        run: npm ci
+
+      - name: Sync seed data from /data
+        working-directory: apps/web
+        run: npm run seed:sync
+
+      - name: Build
+        working-directory: apps/web
+        env:
+          # Repo name -> GitHub Pages base path. Update if the repo is renamed.
+          VITE_BASE_PATH: /project-management-solution/
+          # Set the PM_API_BASE repository variable to the deployed Worker
+          # URL (apps/worker) once it's live to switch the app from demo
+          # mode to real GitHub-backed storage. Leave unset to keep the
+          # site running in local demo mode.
+          VITE_API_BASE: ${{ vars.PM_API_BASE }}
+        run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

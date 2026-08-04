@@ -1,0 +1,43 @@
+import { Link } from 'react-router-dom'
+import type { Project } from '../types'
+import { StatusBadge } from './StatusBadge'
+
+function overallProgress(project: Project): number {
+  if (project.schedule.length === 0) return 0
+  const total = project.schedule.reduce((sum, t) => sum + t.progress, 0)
+  return Math.round(total / project.schedule.length)
+}
+
+export function ProjectCard({ project }: { project: Project }) {
+  const progress = overallProgress(project)
+  return (
+    <Link
+      to={`/projects/${project.id}`}
+      className="block rounded-xl border border-slate-200 bg-white p-4 hover:border-slate-300 hover:shadow-sm transition-all"
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
+          <h3 className="font-semibold text-slate-900 truncate">{project.name}</h3>
+        </div>
+        <StatusBadge status={project.status} />
+      </div>
+      <p className="mt-2 text-sm text-slate-500 line-clamp-2">{project.overview.objective}</p>
+      <div className="mt-3 flex items-center justify-between text-xs text-slate-500">
+        <span>
+          {project.overview.startDate} ~ {project.overview.endDate}
+        </span>
+        <span>{project.overview.manager} 담당</span>
+      </div>
+      <div className="mt-3">
+        <div className="h-1.5 w-full rounded-full bg-slate-100">
+          <div
+            className="h-1.5 rounded-full"
+            style={{ width: `${progress}%`, backgroundColor: project.color }}
+          />
+        </div>
+        <div className="mt-1 text-right text-xs text-slate-400">진행률 {progress}%</div>
+      </div>
+    </Link>
+  )
+}
