@@ -14,6 +14,7 @@ interface NewProjectInput {
   manager: string
   startDate: string
   endDate: string
+  methodology: 'waterfall' | 'agile' | 'hybrid'
 }
 
 function corsHeaders(env: Env): HeadersInit {
@@ -78,6 +79,8 @@ async function handleCreateProject(env: Env, request: Request): Promise<Response
     id,
     name: input.name,
     status: 'planning',
+    methodology: input.methodology,
+    health: 'on_track',
     color: input.color,
     overview: {
       objective: input.objective,
@@ -89,6 +92,8 @@ async function handleCreateProject(env: Env, request: Request): Promise<Response
     },
     scope: { inScope: [], outOfScope: [], plannedDeliverables: [] },
     schedule: [],
+    sprints: [],
+    risks: [],
     meetingMinutes: [],
     deliverables: [],
     progressLog: [],

@@ -17,6 +17,26 @@ export const PROJECT_STATUS_LABEL: Record<ProjectStatus, string> = {
   on_hold: '보류',
 }
 
+// Methodology governs how the Schedule tab renders: waterfall shows
+// calendar/Gantt only, agile adds a Kanban board, hybrid offers both.
+export type Methodology = 'waterfall' | 'agile' | 'hybrid'
+
+export const METHODOLOGY_LABEL: Record<Methodology, string> = {
+  waterfall: 'Waterfall',
+  agile: 'Agile',
+  hybrid: 'Hybrid',
+}
+
+// Health is a PM's risk call ("are we going to hit the date"), distinct
+// from `status` (lifecycle stage). Drives the 🟢/🟡/🔴 dot everywhere.
+export type HealthStatus = 'on_track' | 'at_risk' | 'off_track'
+
+export const HEALTH_LABEL: Record<HealthStatus, string> = {
+  on_track: '정상',
+  at_risk: '주의',
+  off_track: '위험',
+}
+
 export interface ProjectOverview {
   objective: string
   sponsor: string
@@ -37,6 +57,15 @@ export interface ProjectScope {
 
 export type TaskCategory = 'milestone' | 'task' | 'meeting'
 
+export type KanbanStatus = 'todo' | 'doing' | 'review' | 'done'
+
+export const KANBAN_COLUMNS: { status: KanbanStatus; label: string }[] = [
+  { status: 'todo', label: 'To Do' },
+  { status: 'doing', label: 'Doing' },
+  { status: 'review', label: 'Review' },
+  { status: 'done', label: 'Done' },
+]
+
 export interface ScheduleTask {
   id: string
   name: string
@@ -47,6 +76,29 @@ export interface ScheduleTask {
   assignee?: string
   dependsOn?: string[]
   notes?: string
+  // Agile/Hybrid only: rendered as a Kanban board instead of/alongside Gantt.
+  kanbanStatus?: KanbanStatus
+  storyPoints?: number
+  sprintId?: string
+}
+
+export interface Sprint {
+  id: string
+  name: string
+  start: string // ISO date
+  end: string // ISO date
+  storyPointsPlanned?: number
+}
+
+export type RiskSeverity = 'low' | 'medium' | 'high'
+
+export interface Risk {
+  id: string
+  description: string
+  severity: RiskSeverity
+  owner?: string
+  resolved: boolean
+  createdAt: string // ISO date
 }
 
 export interface ActionItem {
@@ -87,17 +139,27 @@ export interface ProgressLogEntry {
   summary: string
 }
 
+export interface BudgetTracking {
+  planned: number // KRW
+  spent: number // KRW
+}
+
 export interface Project {
   id: string
   name: string
   status: ProjectStatus
+  methodology: Methodology
+  health: HealthStatus
   color: string // hex, used consistently across calendar/gantt for this project
   overview: ProjectOverview
   scope: ProjectScope
   schedule: ScheduleTask[]
+  sprints: Sprint[]
+  risks: Risk[]
   meetingMinutes: MeetingMinute[]
   deliverables: Deliverable[]
   progressLog: ProgressLogEntry[]
+  budgetTracking?: BudgetTracking
   updatedAt: string // ISO datetime, set by the write API on every save
 }
 
@@ -114,4 +176,20 @@ export function canCloseProject(project: Project): boolean {
   return project.deliverables.some(
     (d) => d.status === 'submitted' || d.status === 'approved',
   )
+}
+
+export function overallProgress(project: Project): number {
+  if (project.schedule.length === 0) return 0
+  const total = project.schedule.reduce((sum, t) => sum + t.progress, 0)
+  return Math.round(total / project.schedule.length)
+}
+
+export function openRiskCount(project: Project): number {
+  return project.risks.filter((r) => !r.resolved).length
+}
+
+export function budgetConsumptionPct(project: Project): number | null {
+  const b = project.budgetTracking
+  if (!b || b.planned <= 0) return null
+  return Math.round((b.spent / b.planned) * 100)
 }

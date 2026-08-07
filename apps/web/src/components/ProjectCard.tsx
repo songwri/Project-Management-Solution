@@ -1,15 +1,12 @@
 import { Link } from 'react-router-dom'
-import type { Project } from '../types'
+import { overallProgress, openRiskCount, type Project } from '../types'
 import { StatusBadge } from './StatusBadge'
-
-function overallProgress(project: Project): number {
-  if (project.schedule.length === 0) return 0
-  const total = project.schedule.reduce((sum, t) => sum + t.progress, 0)
-  return Math.round(total / project.schedule.length)
-}
+import { MethodologyBadge } from './MethodologyBadge'
+import { HealthDot } from './HealthDot'
 
 export function ProjectCard({ project }: { project: Project }) {
   const progress = overallProgress(project)
+  const risks = openRiskCount(project)
   return (
     <Link
       to={`/projects/${project.id}`}
@@ -17,10 +14,17 @@ export function ProjectCard({ project }: { project: Project }) {
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
+          <HealthDot health={project.health} />
           <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: project.color }} />
           <h3 className="font-semibold text-slate-900 truncate">{project.name}</h3>
         </div>
         <StatusBadge status={project.status} />
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <MethodologyBadge methodology={project.methodology} />
+        {risks > 0 && (
+          <span className="text-xs font-medium text-rose-600">⚠ 리스크 {risks}건</span>
+        )}
       </div>
       <p className="mt-2 text-sm text-slate-500 line-clamp-2">{project.overview.objective}</p>
       <div className="mt-3 flex items-center justify-between text-xs text-slate-500">

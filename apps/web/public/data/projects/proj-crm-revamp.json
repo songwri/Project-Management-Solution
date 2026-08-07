@@ -2,6 +2,8 @@
   "id": "proj-crm-revamp",
   "name": "CRM 시스템 고도화",
   "status": "in_progress",
+  "methodology": "waterfall",
+  "health": "on_track",
   "color": "#2563eb",
   "overview": {
     "objective": "노후화된 CRM을 재구축하여 영업 파이프라인 관리 효율을 30% 개선",
@@ -31,6 +33,18 @@
     { "id": "t9", "name": "운영 전환(Go-Live)", "start": "2026-10-19", "end": "2026-10-19", "progress": 0, "category": "milestone", "dependsOn": ["t7", "t8"] },
     { "id": "t10", "name": "프로젝트 종료 보고", "start": "2026-10-31", "end": "2026-10-31", "progress": 0, "category": "milestone" }
   ],
+  "sprints": [],
+  "risks": [
+    {
+      "id": "risk-1",
+      "description": "레거시 데이터 마이그레이션 시 정합성 이슈 발생 가능성",
+      "severity": "medium",
+      "owner": "최민아",
+      "resolved": false,
+      "createdAt": "2026-07-20"
+    }
+  ],
+  "budgetTracking": { "planned": 120000000, "spent": 54000000 },
   "meetingMinutes": [
     {
       "id": "m1",

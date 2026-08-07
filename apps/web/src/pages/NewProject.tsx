@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { dataClient } from '../lib/dataClient'
+import { METHODOLOGY_LABEL, type Methodology } from '../types'
 
 const COLORS = ['#2563eb', '#059669', '#d97706', '#7c3aed', '#dc2626', '#0891b2', '#db2777']
+const METHODOLOGIES: Methodology[] = ['waterfall', 'agile', 'hybrid']
 
 const inputCls =
   'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none'
@@ -17,6 +19,7 @@ export function NewProject() {
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [color, setColor] = useState(COLORS[0])
+  const [methodology, setMethodology] = useState<Methodology>('waterfall')
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
@@ -33,6 +36,7 @@ export function NewProject() {
         startDate,
         endDate,
         color,
+        methodology,
       })
       navigate(`/projects/${project.id}`)
     } catch (err) {
@@ -68,6 +72,25 @@ export function NewProject() {
             value={objective}
             onChange={(e) => setObjective(e.target.value)}
           />
+        </div>
+        <div>
+          <label className={labelCls}>방법론</label>
+          <div className="flex gap-2">
+            {METHODOLOGIES.map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMethodology(m)}
+                className={`rounded-lg border px-3.5 py-2 text-sm font-medium ${
+                  methodology === m
+                    ? 'border-slate-900 bg-slate-900 text-white'
+                    : 'border-slate-300 text-slate-600 hover:bg-slate-100'
+                }`}
+              >
+                {METHODOLOGY_LABEL[m]}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>

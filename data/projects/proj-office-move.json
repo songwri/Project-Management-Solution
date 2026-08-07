@@ -2,6 +2,8 @@
   "id": "proj-office-move",
   "name": "본사 사무실 이전",
   "status": "closed",
+  "methodology": "waterfall",
+  "health": "on_track",
   "color": "#7c3aed",
   "overview": {
     "objective": "본사를 신사옥으로 이전하고 업무 공백을 최소화",
@@ -23,6 +25,18 @@
     { "id": "t4", "name": "신사옥 업무 개시", "start": "2026-05-18", "end": "2026-05-18", "progress": 100, "category": "milestone" },
     { "id": "t5", "name": "프로젝트 종료", "start": "2026-05-29", "end": "2026-05-29", "progress": 100, "category": "milestone" }
   ],
+  "sprints": [],
+  "risks": [
+    {
+      "id": "risk-1",
+      "description": "이사 당일 네트워크 단절로 일부 업무 공백 발생",
+      "severity": "low",
+      "owner": "조현우",
+      "resolved": true,
+      "createdAt": "2026-05-16"
+    }
+  ],
+  "budgetTracking": { "planned": 80000000, "spent": 76000000 },
   "meetingMinutes": [
     {
       "id": "m1",

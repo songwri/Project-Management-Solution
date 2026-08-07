@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import type { Project, ProjectStatus } from '../../types'
-import { PROJECT_STATUS_LABEL } from '../../types'
+import type { HealthStatus, Methodology, Project, ProjectStatus } from '../../types'
+import { HEALTH_LABEL, METHODOLOGY_LABEL, PROJECT_STATUS_LABEL, budgetConsumptionPct } from '../../types'
 import { Modal } from '../../components/Modal'
 import { ProjectOverviewForm } from '../../components/ProjectOverviewForm'
 
@@ -29,20 +29,50 @@ export function OverviewTab({ project, onSave }: { project: Project; onSave: (p:
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-medium text-slate-500">진행 상태</label>
-          <select
-            value={project.status}
-            onChange={(e) => onSave({ ...project, status: e.target.value as ProjectStatus })}
-            className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm"
-          >
-            {(Object.keys(PROJECT_STATUS_LABEL) as ProjectStatus[]).map((s) => (
-              <option key={s} value={s}>
-                {PROJECT_STATUS_LABEL[s]}
-              </option>
-            ))}
-          </select>
+      <div className="flex flex-wrap justify-between items-center gap-3">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium text-slate-500">진행 상태</label>
+            <select
+              value={project.status}
+              onChange={(e) => onSave({ ...project, status: e.target.value as ProjectStatus })}
+              className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm"
+            >
+              {(Object.keys(PROJECT_STATUS_LABEL) as ProjectStatus[]).map((s) => (
+                <option key={s} value={s}>
+                  {PROJECT_STATUS_LABEL[s]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium text-slate-500">방법론</label>
+            <select
+              value={project.methodology}
+              onChange={(e) => onSave({ ...project, methodology: e.target.value as Methodology })}
+              className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm"
+            >
+              {(Object.keys(METHODOLOGY_LABEL) as Methodology[]).map((m) => (
+                <option key={m} value={m}>
+                  {METHODOLOGY_LABEL[m]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium text-slate-500">건강도</label>
+            <select
+              value={project.health}
+              onChange={(e) => onSave({ ...project, health: e.target.value as HealthStatus })}
+              className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm"
+            >
+              {(Object.keys(HEALTH_LABEL) as HealthStatus[]).map((h) => (
+                <option key={h} value={h}>
+                  {HEALTH_LABEL[h]}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
         <button
           type="button"
@@ -64,6 +94,25 @@ export function OverviewTab({ project, onSave }: { project: Project; onSave: (p:
           <InfoRow label="예산" value={project.overview.budget ?? ''} />
           <InfoRow label="기간" value={`${project.overview.startDate} ~ ${project.overview.endDate}`} />
         </dl>
+        {project.budgetTracking && (
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            <div className="flex items-center justify-between text-xs text-slate-500 mb-1.5">
+              <span>예산 소진율</span>
+              <span>
+                {project.budgetTracking.spent.toLocaleString()} / {project.budgetTracking.planned.toLocaleString()}원
+                ({budgetConsumptionPct(project)}%)
+              </span>
+            </div>
+            <div className="h-1.5 w-full rounded-full bg-slate-100">
+              <div
+                className={`h-1.5 rounded-full ${
+                  (budgetConsumptionPct(project) ?? 0) > 100 ? 'bg-rose-500' : 'bg-slate-700'
+                }`}
+                style={{ width: `${Math.min(100, budgetConsumptionPct(project) ?? 0)}%` }}
+              />
+            </div>
+          </div>
+        )}
       </section>
 
       <section className="rounded-xl border border-slate-200 bg-white p-5">

@@ -2,15 +2,17 @@ import { useMemo, useState } from 'react'
 import type { Project } from '../../types'
 import { AppCalendar } from '../../components/AppCalendar'
 import { GanttChart, type GanttItem } from '../../components/GanttChart'
+import { KanbanBoard } from '../../components/KanbanBoard'
 import { ViewToggle } from '../../components/ViewToggle'
 import { Modal } from '../../components/Modal'
 import { ScheduleTaskForm } from '../../components/ScheduleTaskForm'
 import { projectScheduleToEvents } from '../../lib/calendarEvents'
 
-type ViewMode = 'calendar' | 'gantt'
+type ViewMode = 'calendar' | 'gantt' | 'kanban'
 
 export function ScheduleTab({ project, onSave }: { project: Project; onSave: (p: Project) => void }) {
-  const [view, setView] = useState<ViewMode>('calendar')
+  const isAgileAware = project.methodology === 'agile' || project.methodology === 'hybrid'
+  const [view, setView] = useState<ViewMode>(project.methodology === 'agile' ? 'kanban' : 'calendar')
   const [adding, setAdding] = useState(false)
 
   const events = useMemo(() => projectScheduleToEvents(project), [project])
@@ -30,17 +32,16 @@ export function ScheduleTab({ project, onSave }: { project: Project; onSave: (p:
     [project.schedule],
   )
 
+  const viewOptions = [
+    { value: 'calendar' as const, label: '캘린더' },
+    { value: 'gantt' as const, label: '간트 차트' },
+    ...(isAgileAware ? [{ value: 'kanban' as const, label: '칸반' }] : []),
+  ]
+
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <ViewToggle
-          value={view}
-          onChange={setView}
-          options={[
-            { value: 'calendar', label: '캘린더' },
-            { value: 'gantt', label: '간트 차트' },
-          ]}
-        />
+        <ViewToggle value={view} onChange={setView} options={viewOptions} />
         <button
           type="button"
           onClick={() => setAdding(true)}
@@ -50,11 +51,11 @@ export function ScheduleTab({ project, onSave }: { project: Project; onSave: (p:
         </button>
       </div>
 
-      {view === 'calendar' ? (
-        <AppCalendar events={events} />
-      ) : (
+      {view === 'calendar' && <AppCalendar events={events} />}
+      {view === 'gantt' && (
         <GanttChart items={ganttItems} emptyMessage="등록된 일정이 없습니다. '일정 추가'로 시작하세요." />
       )}
+      {view === 'kanban' && <KanbanBoard tasks={project.schedule} color={project.color} />}
 
       <section className="rounded-xl border border-slate-200 bg-white overflow-hidden">
         <table className="w-full text-sm">
@@ -97,6 +98,7 @@ export function ScheduleTab({ project, onSave }: { project: Project; onSave: (p:
       {adding && (
         <Modal title="일정 추가" onClose={() => setAdding(false)}>
           <ScheduleTaskForm
+            methodology={project.methodology}
             onCancel={() => setAdding(false)}
             onSubmit={(task) => {
               onSave({ ...project, schedule: [...project.schedule, task] })

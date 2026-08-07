@@ -92,6 +92,8 @@ export const localDemoClient: DataClient = {
       id,
       name: input.name,
       status: 'planning',
+      methodology: input.methodology,
+      health: 'on_track',
       color: input.color,
       overview: {
         objective: input.objective,
@@ -103,6 +105,8 @@ export const localDemoClient: DataClient = {
       },
       scope: { inScope: [], outOfScope: [], plannedDeliverables: [] },
       schedule: [],
+      sprints: [],
+      risks: [],
       meetingMinutes: [],
       deliverables: [],
       progressLog: [],
