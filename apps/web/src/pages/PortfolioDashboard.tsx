@@ -4,34 +4,51 @@ import type { EventClickArg } from '@fullcalendar/core'
 import { dataClient } from '../lib/dataClient'
 import { portfolioToEvents } from '../lib/calendarEvents'
 import type { Methodology, Project, ProjectStatus } from '../types'
-import { METHODOLOGY_LABEL, PROJECT_STATUS_LABEL } from '../types'
+import { DEFAULT_METHODOLOGIES, DEFAULT_STATUSES, RESERVED_STATUS } from '../types'
+import { useMasterData } from '../lib/MasterDataContext'
+import { teamAndDescendantIds } from '../masterData'
 import { AppCalendar } from '../components/AppCalendar'
 import { GanttChart, type GanttItem } from '../components/GanttChart'
 import { ViewToggle } from '../components/ViewToggle'
 import { ProjectCard } from '../components/ProjectCard'
 import { ProjectTable } from '../components/ProjectTable'
+import { DonutChart, type DonutSlice } from '../components/DonutChart'
+import { YearBarChart } from '../components/YearBarChart'
 
 type TimelineView = 'calendar' | 'gantt'
 type ListView = 'simple' | 'detailed'
+
+const STAGE_COLORS = ['#2a78d6', '#eb6834', '#1baf7a', '#e87ba4']
 
 export function PortfolioDashboard() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const query = searchParams.get('q')?.trim().toLowerCase() ?? ''
+  const { masterData } = useMasterData()
 
   const [projects, setProjects] = useState<Project[] | null>(null)
   const [timelineView, setTimelineView] = useState<TimelineView>('calendar')
-  const [listView, setListView] = useState<ListView>('simple')
+  const [listView, setListView] = useState<ListView>('detailed')
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | 'all'>('all')
   const [methodologyFilter, setMethodologyFilter] = useState<Methodology | 'all'>('all')
+  const [teamFilter, setTeamFilter] = useState('all')
+
+  const statuses = masterData.statuses.length > 0 ? masterData.statuses : DEFAULT_STATUSES
+  const methodologies = masterData.methodologies.length > 0 ? masterData.methodologies : DEFAULT_METHODOLOGIES
 
   useEffect(() => {
     dataClient.listProjects().then(setProjects)
   }, [])
 
-  const filtered = useMemo(() => {
+  const teamScoped = useMemo(() => {
     if (!projects) return []
-    return projects.filter((p) => {
+    if (teamFilter === 'all') return projects
+    const ids = teamAndDescendantIds(masterData.teams, teamFilter)
+    return projects.filter((p) => p.ownerTeamId && ids.has(p.ownerTeamId))
+  }, [projects, teamFilter, masterData.teams])
+
+  const filtered = useMemo(() => {
+    return teamScoped.filter((p) => {
       if (statusFilter !== 'all' && p.status !== statusFilter) return false
       if (methodologyFilter !== 'all' && p.methodology !== methodologyFilter) return false
       if (query && !p.name.toLowerCase().includes(query) && !p.overview.objective.toLowerCase().includes(query)) {
@@ -39,7 +56,7 @@ export function PortfolioDashboard() {
       }
       return true
     })
-  }, [projects, statusFilter, methodologyFilter, query])
+  }, [teamScoped, statusFilter, methodologyFilter, query])
 
   const events = useMemo(() => portfolioToEvents(filtered), [filtered])
 
@@ -58,9 +75,32 @@ export function PortfolioDashboard() {
 
   const statusCounts = useMemo(() => {
     const counts: Record<string, number> = {}
-    for (const p of projects ?? []) counts[p.status] = (counts[p.status] ?? 0) + 1
+    for (const p of teamScoped) counts[p.status] = (counts[p.status] ?? 0) + 1
     return counts
-  }, [projects])
+  }, [teamScoped])
+
+  const stageSlices: DonutSlice[] = useMemo(() => {
+    const active = teamScoped.filter((p) => p.status !== RESERVED_STATUS.CLOSED)
+    const nonClosed = statuses.filter((s) => s.key !== RESERVED_STATUS.CLOSED)
+    return nonClosed
+      .map((s, i) => ({
+        key: s.key,
+        label: s.label,
+        value: active.filter((p) => p.status === s.key).length,
+        color: STAGE_COLORS[i % STAGE_COLORS.length],
+      }))
+      .filter((s) => s.value > 0)
+  }, [teamScoped, statuses])
+
+  const yearCounts = useMemo(() => {
+    const counts = new Map<string, number>()
+    for (const p of teamScoped) {
+      const year = p.overview.startDate?.slice(0, 4)
+      if (!year) continue
+      counts.set(year, (counts.get(year) ?? 0) + 1)
+    }
+    return [...counts.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([year, count]) => ({ year, count }))
+  }, [teamScoped])
 
   function handleEventClick(arg: EventClickArg) {
     const projectId = arg.event.extendedProps.projectId as string | undefined
@@ -85,31 +125,63 @@ export function PortfolioDashboard() {
               "{query}" 검색 결과 {filtered.length}건
             </>
           ) : (
-            <>전체 {projects.length}개 프로젝트의 통합 일정을 한눈에 확인하세요.</>
+            <>전체 {teamScoped.length}개 프로젝트의 통합 일정을 한눈에 확인하세요.</>
           )}
         </p>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <section className="rounded-xl border border-slate-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-slate-700 mb-4">진행 단계 구성 (진행중 프로젝트)</h2>
+          {stageSlices.length === 0 ? (
+            <p className="text-sm text-slate-400">진행중인 프로젝트가 없습니다.</p>
+          ) : (
+            <DonutChart slices={stageSlices} />
+          )}
+        </section>
+        <section className="rounded-xl border border-slate-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-slate-700 mb-4">연도별 프로젝트 수 (시작연도 기준)</h2>
+          {yearCounts.length === 0 ? (
+            <p className="text-sm text-slate-400">데이터가 없습니다.</p>
+          ) : (
+            <YearBarChart data={yearCounts} />
+          )}
+        </section>
+      </div>
+
       <div className="flex flex-wrap items-center gap-2">
-        <FilterChip label={`전체 ${projects.length}`} active={statusFilter === 'all'} onClick={() => setStatusFilter('all')} />
-        {(Object.keys(PROJECT_STATUS_LABEL) as ProjectStatus[]).map((s) => (
+        <FilterChip label={`전체 ${teamScoped.length}`} active={statusFilter === 'all'} onClick={() => setStatusFilter('all')} />
+        {statuses.map((s) => (
           <FilterChip
-            key={s}
-            label={`${PROJECT_STATUS_LABEL[s]} ${statusCounts[s] ?? 0}`}
-            active={statusFilter === s}
-            onClick={() => setStatusFilter(s)}
+            key={s.key}
+            label={`${s.label} ${statusCounts[s.key] ?? 0}`}
+            active={statusFilter === s.key}
+            onClick={() => setStatusFilter(s.key)}
           />
         ))}
         <span className="mx-1 h-4 w-px bg-slate-200" />
         <FilterChip label="전체 방법론" active={methodologyFilter === 'all'} onClick={() => setMethodologyFilter('all')} />
-        {(Object.keys(METHODOLOGY_LABEL) as Methodology[]).map((m) => (
+        {methodologies.map((m) => (
           <FilterChip
-            key={m}
-            label={METHODOLOGY_LABEL[m]}
-            active={methodologyFilter === m}
-            onClick={() => setMethodologyFilter(m)}
+            key={m.key}
+            label={m.label}
+            active={methodologyFilter === m.key}
+            onClick={() => setMethodologyFilter(m.key)}
           />
         ))}
+        <span className="mx-1 h-4 w-px bg-slate-200" />
+        <select
+          value={teamFilter}
+          onChange={(e) => setTeamFilter(e.target.value)}
+          className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-600"
+        >
+          <option value="all">전체 조직</option>
+          {masterData.teams.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.name}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -144,8 +216,8 @@ export function PortfolioDashboard() {
             value={listView}
             onChange={setListView}
             options={[
-              { value: 'simple', label: '간단 보기' },
-              { value: 'detailed', label: '상세 보기' },
+              { value: 'detailed', label: '표 보기' },
+              { value: 'simple', label: '카드 보기' },
             ]}
           />
         </div>

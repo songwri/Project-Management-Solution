@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { KANBAN_COLUMNS, type KanbanStatus, type Methodology, type ScheduleTask, type TaskCategory } from '../types'
+import { useMasterData } from '../lib/MasterDataContext'
 
 const inputCls =
   'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none'
@@ -14,6 +15,7 @@ export function ScheduleTaskForm({
   onSubmit: (task: ScheduleTask) => void
   onCancel: () => void
 }) {
+  const { masterData } = useMasterData()
   const isAgileAware = methodology === 'agile' || methodology === 'hybrid'
   const [name, setName] = useState('')
   const [category, setCategory] = useState<TaskCategory>('task')
@@ -61,7 +63,14 @@ export function ScheduleTaskForm({
         </div>
         <div>
           <label className={labelCls}>담당자</label>
-          <input className={inputCls} value={assignee} onChange={(e) => setAssignee(e.target.value)} />
+          <select className={inputCls} value={assignee} onChange={(e) => setAssignee(e.target.value)}>
+            <option value="">미배정</option>
+            {masterData.people.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">

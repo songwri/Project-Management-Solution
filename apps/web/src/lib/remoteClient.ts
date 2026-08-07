@@ -1,4 +1,5 @@
 import type { Project, Portfolio } from '../types'
+import type { MasterData } from '../masterData'
 import type { DataClient, NewProjectInput } from './dataClient'
 import { API_BASE } from './config'
 import { getAccessToken } from './authToken'
@@ -61,6 +62,17 @@ export const remoteClient: DataClient = {
     return request<Project>('/api/projects', {
       method: 'POST',
       body: JSON.stringify(input),
+    })
+  },
+
+  getMasterData() {
+    return request<MasterData>('/api/master-data')
+  },
+
+  saveMasterData(data) {
+    return request<MasterData>('/api/master-data', {
+      method: 'PUT',
+      body: JSON.stringify(data),
     })
   },
 }

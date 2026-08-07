@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import type { Project, ProjectOverview, ProjectScope } from '../types'
+import type { BudgetTracking, Project, ProjectOverview, ProjectScope } from '../types'
 
 const inputCls =
   'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none'
@@ -18,17 +18,17 @@ export function ProjectOverviewForm({
   onCancel,
 }: {
   project: Project
-  onSubmit: (overview: ProjectOverview, scope: ProjectScope) => void
+  onSubmit: (overview: ProjectOverview, scope: ProjectScope, budgetTracking?: BudgetTracking) => void
   onCancel: () => void
 }) {
   const [objective, setObjective] = useState(project.overview.objective)
   const [sponsor, setSponsor] = useState(project.overview.sponsor)
-  const [manager, setManager] = useState(project.overview.manager)
-  const [members, setMembers] = useState(project.overview.members.join(', '))
   const [startDate, setStartDate] = useState(project.overview.startDate)
   const [endDate, setEndDate] = useState(project.overview.endDate)
   const [budget, setBudget] = useState(project.overview.budget ?? '')
   const [background, setBackground] = useState(project.overview.background ?? '')
+  const [budgetPlanned, setBudgetPlanned] = useState(String(project.budgetTracking?.planned ?? ''))
+  const [budgetSpent, setBudgetSpent] = useState(String(project.budgetTracking?.spent ?? ''))
 
   const [inScope, setInScope] = useState(project.scope.inScope.join('\n'))
   const [outOfScope, setOutOfScope] = useState(project.scope.outOfScope.join('\n'))
@@ -36,15 +36,12 @@ export function ProjectOverviewForm({
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
+    const planned = Number(budgetPlanned)
+    const spent = Number(budgetSpent)
     onSubmit(
       {
         objective,
         sponsor,
-        manager,
-        members: members
-          .split(',')
-          .map((m) => m.trim())
-          .filter(Boolean),
         startDate,
         endDate,
         budget: budget || undefined,
@@ -55,6 +52,7 @@ export function ProjectOverviewForm({
         outOfScope: toLines(outOfScope),
         plannedDeliverables: toLines(plannedDeliverables),
       },
+      budgetPlanned ? { planned, spent: spent || 0 } : undefined,
     )
   }
 
@@ -64,19 +62,9 @@ export function ProjectOverviewForm({
         <label className={labelCls}>프로젝트 목표</label>
         <textarea className={inputCls} rows={2} value={objective} onChange={(e) => setObjective(e.target.value)} />
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className={labelCls}>스폰서</label>
-          <input className={inputCls} value={sponsor} onChange={(e) => setSponsor(e.target.value)} />
-        </div>
-        <div>
-          <label className={labelCls}>PM(담당자)</label>
-          <input className={inputCls} value={manager} onChange={(e) => setManager(e.target.value)} />
-        </div>
-      </div>
       <div>
-        <label className={labelCls}>팀원 (쉼표로 구분)</label>
-        <input className={inputCls} value={members} onChange={(e) => setMembers(e.target.value)} />
+        <label className={labelCls}>스폰서</label>
+        <input className={inputCls} value={sponsor} onChange={(e) => setSponsor(e.target.value)} />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
@@ -89,8 +77,30 @@ export function ProjectOverviewForm({
         </div>
       </div>
       <div>
-        <label className={labelCls}>예산</label>
+        <label className={labelCls}>예산 (표시용 텍스트, 예: "1억 2천만원")</label>
         <input className={inputCls} value={budget} onChange={(e) => setBudget(e.target.value)} />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={labelCls}>예산 소진율 계산용 - 계획(원)</label>
+          <input
+            type="number"
+            min={0}
+            className={inputCls}
+            value={budgetPlanned}
+            onChange={(e) => setBudgetPlanned(e.target.value)}
+          />
+        </div>
+        <div>
+          <label className={labelCls}>집행(원)</label>
+          <input
+            type="number"
+            min={0}
+            className={inputCls}
+            value={budgetSpent}
+            onChange={(e) => setBudgetSpent(e.target.value)}
+          />
+        </div>
       </div>
       <div>
         <label className={labelCls}>배경</label>

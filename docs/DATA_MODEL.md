@@ -6,6 +6,7 @@
 ```
 data/
 ├── portfolio.json           # 포트폴리오 메타 + 소속 프로젝트 ID 목록
+├── masterData.json          # 담당자/팀/상태값 표시 이름 (아래 참고)
 └── projects/
     ├── proj-crm-revamp.json # 프로젝트 1건 = 파일 1개
     ├── proj-mobile-app.json
@@ -28,16 +29,45 @@ data/
 }
 ```
 
+## masterData.json
+
+프로젝트 데이터와 분리된, 조직 전반에서 공유되는 마스터 데이터입니다.
+설정 화면의 "담당자 · 팀 관리" / "마스터 데이터" 탭에서 편집합니다.
+
+```jsonc
+{
+  "teams": [{ "id": "team-dev", "name": "개발본부" }, { "id": "team-dev-fe", "name": "프론트엔드팀", "parentTeamId": "team-dev" }],
+  "people": [{ "id": "p-park-seoyeon", "name": "박서연", "teamId": "team-dev-be", "title": "책임" }],
+  "statuses": [{ "key": "planning", "label": "기획" }, ...],
+  "methodologies": [{ "key": "waterfall", "label": "Waterfall" }, ...],
+  "healthLevels": [{ "key": "on_track", "label": "정상" }, ...],
+  "projectRoles": [{ "key": "pm", "label": "PM" }, { "key": "member", "label": "멤버" }, ...],
+  "overtimeLogs": [{ "id": "ot-1", "personId": "p-jung-haneul", "month": "2026-08", "hours": 26 }]
+}
+```
+
+- `statuses`/`methodologies`/`healthLevels`/`projectRoles`는 **표시 이름을
+  자유롭게 바꾸거나 새 항목을 추가/삭제**할 수 있는 마스터 데이터입니다
+  (예: `waterfall` 값은 그대로 두고 라벨만 "흐름방식"으로 변경). `key`는
+  프로젝트 JSON에 그대로 저장되는 값이라 바꾸면 기존 데이터와 어긋나니
+  바꾸지 마세요 — 바꿀 수 있는 건 `label`뿐입니다. `agile`/`hybrid`(칸반
+  활성화)와 `closed`(종료 처리)처럼 화면 동작에 연결된 키는 삭제가
+  막혀 있습니다(라벨 변경은 가능).
+- `overtimeLogs`는 담당자가 특정 월에 추가로 투입한 시간(야근)을 기록해
+  가동률(person-month) 계산에 반영합니다 — `apps/web/src/lib/capacity.ts`.
+
 ## projects/*.json (Project)
 
 | 필드 | 설명 |
 |---|---|
 | `id` | 파일명과 동일한 고유 ID (`proj-` 접두사 + slug) |
-| `status` | 라이프사이클 단계: `planning` \| `in_progress` \| `closing` \| `closed` \| `on_hold` |
-| `methodology` | `waterfall` \| `agile` \| `hybrid` — 일정 탭의 렌더링 방식을 결정 |
-| `health` | PM의 리스크 판단: `on_track` \| `at_risk` \| `off_track` (🟢/🟡/🔴 표시) |
+| `status` | 라이프사이클 단계 — masterData.json의 `statuses` 키 |
+| `methodology` | 일정 탭의 렌더링 방식을 결정 — masterData.json의 `methodologies` 키 |
+| `health` | PM의 리스크 판단(🟢/🟡/🔴) — masterData.json의 `healthLevels` 키 |
 | `color` | 캘린더/간트에서 이 프로젝트를 나타내는 색상 (hex) |
-| `overview` | 목표, 스폰서, PM, 팀원, 기간, 예산(자유 텍스트), 배경 |
+| `ownerTeamId` | 프로젝트를 소유한 팀 (`masterData.json`의 `teams[].id`) — 대시보드 조직별 필터에 사용 |
+| `assignments` | `{ personId, role }[]` — 담당자 배정. 같은 사람도 프로젝트마다 역할이 다를 수 있음 (한 프로젝트에서는 PM, 다른 프로젝트에서는 멤버) |
+| `overview` | 목표, 스폰서(자유 텍스트), 기간, 예산(자유 텍스트), 배경 |
 | `scope` | 포함 범위 / 제외 범위 / 계획된 산출물 목록 |
 | `schedule` | `ScheduleTask[]` — 세부 일정 (작업/마일스톤), 캘린더·간트·칸반의 원천 데이터 |
 | `sprints` | `Sprint[]` — Agile/Hybrid 프로젝트의 스프린트 목록 (선택) |
@@ -58,7 +88,7 @@ data/
   "end": "2026-08-21",
   "progress": 65,
   "category": "task",       // "task" | "milestone" | "meeting"
-  "assignee": "최민아",
+  "assignee": "p-choi-mina", // masterData.json people[].id (자유 텍스트 아님)
   "dependsOn": ["t3"],       // 간트 차트의 의존관계 화살표로 표시됨
   "kanbanStatus": "doing",  // Agile/Hybrid만: "todo"|"doing"|"review"|"done"
   "storyPoints": 8,          // Agile/Hybrid만
@@ -77,6 +107,18 @@ data/
 - **hybrid**: 세 가지 모두 제공 — 상위 단계는 마일스톤으로, 세부 작업은
   `sprintId`/`kanbanStatus`를 채워 스프린트 단위로 관리하는 2단 구조를
   의도합니다.
+
+### 가동률(Man/Month) 계산
+
+`apps/web/src/lib/capacity.ts`가 담당자별 월간 가동률을 계산합니다:
+
+- 하루 8시간을 표준으로 두고, 그 사람이 `assignee`로 지정된 모든 작업의
+  기간이 해당 월과 겹치는 영업일(월~금) 수를 합산합니다 (여러 프로젝트에
+  겹쳐 배정되어 있으면 자동으로 100%를 넘습니다).
+- 여기에 `masterData.json`의 `overtimeLogs`에 기록된 그 달의 야근 시간을
+  더해 최종 가동률(`totalHours / standardHours`)을 냅니다.
+- 리소스 페이지(`/resources`)는 이 값을 기준으로 정상(<85%) / 바쁨
+  (85~100%) / 과부하(>100%)를 표시합니다.
 
 ### Risk
 

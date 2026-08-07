@@ -5,11 +5,16 @@
   "methodology": "waterfall",
   "health": "on_track",
   "color": "#2563eb",
+  "ownerTeamId": "team-dev",
+  "assignments": [
+    { "personId": "p-park-seoyeon", "role": "pm" },
+    { "personId": "p-lee-junho", "role": "member" },
+    { "personId": "p-choi-mina", "role": "member" },
+    { "personId": "p-jung-haneul", "role": "member" }
+  ],
   "overview": {
     "objective": "노후화된 CRM을 재구축하여 영업 파이프라인 관리 효율을 30% 개선",
     "sponsor": "영업본부장 김도윤",
-    "manager": "박서연",
-    "members": ["박서연", "이준호", "최민아", "정하늘"],
     "startDate": "2026-06-01",
     "endDate": "2026-10-31",
     "budget": "1억 2천만원",
@@ -22,11 +27,11 @@
     "constraints": "기존 시스템과 3개월간 병행 운영 필요"
   },
   "schedule": [
-    { "id": "t1", "name": "요구사항 분석", "start": "2026-06-01", "end": "2026-06-19", "progress": 100, "category": "task", "assignee": "박서연" },
+    { "id": "t1", "name": "요구사항 분석", "start": "2026-06-01", "end": "2026-06-19", "progress": 100, "category": "task", "assignee": "p-park-seoyeon" },
     { "id": "t2", "name": "요구사항 정의서 확정", "start": "2026-06-19", "end": "2026-06-19", "progress": 100, "category": "milestone" },
-    { "id": "t3", "name": "화면 설계", "start": "2026-06-22", "end": "2026-07-17", "progress": 100, "category": "task", "assignee": "이준호", "dependsOn": ["t1"] },
-    { "id": "t4", "name": "개발 - 파이프라인 모듈", "start": "2026-07-06", "end": "2026-08-21", "progress": 65, "category": "task", "assignee": "최민아", "dependsOn": ["t3"] },
-    { "id": "t5", "name": "개발 - 모바일 UI", "start": "2026-07-13", "end": "2026-08-28", "progress": 40, "category": "task", "assignee": "정하늘", "dependsOn": ["t3"] },
+    { "id": "t3", "name": "화면 설계", "start": "2026-06-22", "end": "2026-07-17", "progress": 100, "category": "task", "assignee": "p-lee-junho", "dependsOn": ["t1"] },
+    { "id": "t4", "name": "개발 - 파이프라인 모듈", "start": "2026-07-06", "end": "2026-08-21", "progress": 65, "category": "task", "assignee": "p-choi-mina", "dependsOn": ["t3"] },
+    { "id": "t5", "name": "개발 - 모바일 UI", "start": "2026-07-13", "end": "2026-08-28", "progress": 40, "category": "task", "assignee": "p-jung-haneul", "dependsOn": ["t3"] },
     { "id": "t6", "name": "데이터 마이그레이션 리허설", "start": "2026-08-24", "end": "2026-09-04", "progress": 0, "category": "task", "dependsOn": ["t4"] },
     { "id": "t7", "name": "통합 테스트", "start": "2026-09-07", "end": "2026-09-25", "progress": 0, "category": "task", "dependsOn": ["t5", "t6"] },
     { "id": "t8", "name": "사용자 교육", "start": "2026-09-28", "end": "2026-10-09", "progress": 0, "category": "task" },

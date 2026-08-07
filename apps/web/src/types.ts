@@ -2,46 +2,68 @@
 // These types are the single source of truth for the JSON documents
 // stored in the GitHub repo under /data (see docs/DATA_MODEL.md).
 
-export type ProjectStatus =
-  | 'planning'
-  | 'in_progress'
-  | 'closing' // deliverables submitted, pending final sign-off
-  | 'closed'
-  | 'on_hold'
+import { PM_ROLE_KEY, type ProjectAssignment } from './masterData'
+export type { ProjectAssignment } from './masterData'
 
-export const PROJECT_STATUS_LABEL: Record<ProjectStatus, string> = {
-  planning: '기획',
-  in_progress: '진행중',
-  closing: '마감 진행중',
-  closed: '완료',
-  on_hold: '보류',
-}
+// Status/methodology/health are keys into the renameable master-data
+// taxonomy (see masterData.ts + the "마스터 데이터" admin page) — the
+// business owner can rename, add, or remove entries without a code change.
+// They're plain `string` rather than a fixed union for that reason; a
+// handful of RESERVED_* keys below still gate real behavior (the Kanban
+// board, the closeout check) and always exist as defaults.
+export type ProjectStatus = string
+export type Methodology = string
+export type HealthStatus = string
 
-// Methodology governs how the Schedule tab renders: waterfall shows
-// calendar/Gantt only, agile adds a Kanban board, hybrid offers both.
-export type Methodology = 'waterfall' | 'agile' | 'hybrid'
+export const RESERVED_STATUS = {
+  PLANNING: 'planning',
+  IN_PROGRESS: 'in_progress',
+  CLOSING: 'closing',
+  CLOSED: 'closed',
+  ON_HOLD: 'on_hold',
+} as const
 
-export const METHODOLOGY_LABEL: Record<Methodology, string> = {
-  waterfall: 'Waterfall',
-  agile: 'Agile',
-  hybrid: 'Hybrid',
-}
+export const RESERVED_METHODOLOGY = {
+  WATERFALL: 'waterfall',
+  AGILE: 'agile',
+  HYBRID: 'hybrid',
+} as const
 
-// Health is a PM's risk call ("are we going to hit the date"), distinct
-// from `status` (lifecycle stage). Drives the 🟢/🟡/🔴 dot everywhere.
-export type HealthStatus = 'on_track' | 'at_risk' | 'off_track'
+export const RESERVED_HEALTH = {
+  ON_TRACK: 'on_track',
+  AT_RISK: 'at_risk',
+  OFF_TRACK: 'off_track',
+} as const
 
-export const HEALTH_LABEL: Record<HealthStatus, string> = {
-  on_track: '정상',
-  at_risk: '주의',
-  off_track: '위험',
+// Default label sets — used to seed masterData.json and as a fallback
+// before it loads or for a key the admin hasn't labeled.
+export const DEFAULT_STATUSES = [
+  { key: RESERVED_STATUS.PLANNING, label: '기획' },
+  { key: RESERVED_STATUS.IN_PROGRESS, label: '진행중' },
+  { key: RESERVED_STATUS.CLOSING, label: '마감 진행중' },
+  { key: RESERVED_STATUS.CLOSED, label: '완료' },
+  { key: RESERVED_STATUS.ON_HOLD, label: '보류' },
+]
+
+export const DEFAULT_METHODOLOGIES = [
+  { key: RESERVED_METHODOLOGY.WATERFALL, label: 'Waterfall' },
+  { key: RESERVED_METHODOLOGY.AGILE, label: 'Agile' },
+  { key: RESERVED_METHODOLOGY.HYBRID, label: 'Hybrid' },
+]
+
+export const DEFAULT_HEALTH_LEVELS = [
+  { key: RESERVED_HEALTH.ON_TRACK, label: '정상' },
+  { key: RESERVED_HEALTH.AT_RISK, label: '주의' },
+  { key: RESERVED_HEALTH.OFF_TRACK, label: '위험' },
+]
+
+export function labelFrom(options: { key: string; label: string }[], key: string): string {
+  return options.find((o) => o.key === key)?.label ?? key
 }
 
 export interface ProjectOverview {
   objective: string
-  sponsor: string
-  manager: string
-  members: string[]
+  sponsor: string // business sponsor — free text, may not be a tracked Person
   startDate: string // ISO date
   endDate: string // ISO date (target)
   budget?: string
@@ -73,7 +95,7 @@ export interface ScheduleTask {
   end: string // ISO date
   progress: number // 0-100
   category: TaskCategory
-  assignee?: string
+  assignee?: string // Person.id — resolve display name via masterData
   dependsOn?: string[]
   notes?: string
   // Agile/Hybrid only: rendered as a Kanban board instead of/alongside Gantt.
@@ -151,6 +173,8 @@ export interface Project {
   methodology: Methodology
   health: HealthStatus
   color: string // hex, used consistently across calendar/gantt for this project
+  ownerTeamId?: string // owning team, for team/org-level dashboard views
+  assignments: ProjectAssignment[] // who's on this project and in what role
   overview: ProjectOverview
   scope: ProjectScope
   schedule: ScheduleTask[]
@@ -192,4 +216,12 @@ export function budgetConsumptionPct(project: Project): number | null {
   const b = project.budgetTracking
   if (!b || b.planned <= 0) return null
   return Math.round((b.spent / b.planned) * 100)
+}
+
+export function projectManagerAssignment(project: Project): ProjectAssignment | undefined {
+  return project.assignments.find((a) => a.role === PM_ROLE_KEY)
+}
+
+export function projectMemberAssignments(project: Project): ProjectAssignment[] {
+  return project.assignments.filter((a) => a.role !== PM_ROLE_KEY)
 }

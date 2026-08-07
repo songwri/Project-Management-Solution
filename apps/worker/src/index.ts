@@ -11,10 +11,11 @@ interface NewProjectInput {
   color: string
   objective: string
   sponsor: string
-  manager: string
+  managerId: string
   startDate: string
   endDate: string
   methodology: 'waterfall' | 'agile' | 'hybrid'
+  ownerTeamId?: string
 }
 
 function corsHeaders(env: Env): HeadersInit {
@@ -56,6 +57,17 @@ async function handleGetPortfolio(env: Env): Promise<Response> {
   return json(env, portfolio)
 }
 
+async function handleGetMasterData(env: Env): Promise<Response> {
+  const masterData = await readJsonFile(env, 'masterData.json')
+  return json(env, masterData)
+}
+
+async function handlePutMasterData(env: Env, request: Request): Promise<Response> {
+  const body = await request.json()
+  await writeJsonFile(env, 'masterData.json', body, 'chore(data): update master data')
+  return json(env, body)
+}
+
 async function handleGetProject(env: Env, id: string): Promise<Response> {
   const project = await readJsonFile(env, `projects/${id}.json`)
   return json(env, project)
@@ -82,11 +94,11 @@ async function handleCreateProject(env: Env, request: Request): Promise<Response
     methodology: input.methodology,
     health: 'on_track',
     color: input.color,
+    ownerTeamId: input.ownerTeamId,
+    assignments: input.managerId ? [{ personId: input.managerId, role: 'pm' }] : [],
     overview: {
       objective: input.objective,
       sponsor: input.sponsor,
-      manager: input.manager,
-      members: [],
       startDate: input.startDate,
       endDate: input.endDate,
     },
@@ -125,6 +137,12 @@ export default {
     try {
       if (parts[0] === 'api' && parts[1] === 'portfolio' && request.method === 'GET') {
         return await handleGetPortfolio(env)
+      }
+      if (parts[0] === 'api' && parts[1] === 'master-data' && request.method === 'GET') {
+        return await handleGetMasterData(env)
+      }
+      if (parts[0] === 'api' && parts[1] === 'master-data' && request.method === 'PUT') {
+        return await handlePutMasterData(env, request)
       }
       if (parts[0] === 'api' && parts[1] === 'projects' && parts[2] && request.method === 'GET') {
         return await handleGetProject(env, parts[2])

@@ -5,11 +5,14 @@
   "methodology": "agile",
   "health": "on_track",
   "color": "#059669",
+  "ownerTeamId": "team-dev-fe",
+  "assignments": [
+    { "personId": "p-jung-haneul", "role": "pm" },
+    { "personId": "p-kim-minjae", "role": "member" }
+  ],
   "overview": {
     "objective": "종이/엑셀 기반 근태 신청을 모바일 앱으로 전환하여 처리 시간을 단축",
     "sponsor": "인사팀장 오세훈",
-    "manager": "정하늘",
-    "members": ["정하늘", "김민재"],
     "startDate": "2026-09-01",
     "endDate": "2026-12-19",
     "budget": "6천만원",
@@ -21,10 +24,10 @@
     "plannedDeliverables": ["요구사항 정의서", "화면설계서", "베타 테스트 결과보고서"]
   },
   "schedule": [
-    { "id": "t1", "name": "요구사항 수집(설문/인터뷰)", "start": "2026-09-01", "end": "2026-09-18", "progress": 40, "category": "task", "assignee": "정하늘", "kanbanStatus": "doing", "storyPoints": 8, "sprintId": "sprint-1" },
+    { "id": "t1", "name": "요구사항 수집(설문/인터뷰)", "start": "2026-09-01", "end": "2026-09-18", "progress": 40, "category": "task", "assignee": "p-jung-haneul", "kanbanStatus": "doing", "storyPoints": 8, "sprintId": "sprint-1" },
     { "id": "t2", "name": "요구사항 정의서 확정", "start": "2026-09-18", "end": "2026-09-18", "progress": 0, "category": "milestone" },
-    { "id": "t3", "name": "화면 설계", "start": "2026-09-21", "end": "2026-10-16", "progress": 0, "category": "task", "assignee": "김민재", "dependsOn": ["t1"], "kanbanStatus": "todo", "storyPoints": 13, "sprintId": "sprint-2" },
-    { "id": "t4", "name": "개발", "start": "2026-10-19", "end": "2026-11-27", "progress": 0, "category": "task", "assignee": "정하늘", "dependsOn": ["t3"], "kanbanStatus": "todo", "storyPoints": 21 },
+    { "id": "t3", "name": "화면 설계", "start": "2026-09-21", "end": "2026-10-16", "progress": 0, "category": "task", "assignee": "p-kim-minjae", "dependsOn": ["t1"], "kanbanStatus": "todo", "storyPoints": 13, "sprintId": "sprint-2" },
+    { "id": "t4", "name": "개발", "start": "2026-10-19", "end": "2026-11-27", "progress": 0, "category": "task", "assignee": "p-jung-haneul", "dependsOn": ["t3"], "kanbanStatus": "todo", "storyPoints": 21 },
     { "id": "t5", "name": "베타 테스트", "start": "2026-11-30", "end": "2026-12-11", "progress": 0, "category": "task", "dependsOn": ["t4"], "kanbanStatus": "todo", "storyPoints": 8 },
     { "id": "t6", "name": "정식 배포", "start": "2026-12-19", "end": "2026-12-19", "progress": 0, "category": "milestone" }
   ],

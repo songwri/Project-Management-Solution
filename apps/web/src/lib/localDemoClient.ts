@@ -1,4 +1,6 @@
 import type { Project, Portfolio } from '../types'
+import type { MasterData } from '../masterData'
+import { PM_ROLE_KEY } from '../masterData'
 import type { DataClient, NewProjectInput } from './dataClient'
 
 // Local demo/dev backend: seeds itself from the bundled /data/*.json files
@@ -11,18 +13,20 @@ const STORAGE_KEY = 'pm-solution-demo-store-v1'
 interface DemoStore {
   portfolio: Portfolio
   projects: Record<string, Project>
+  masterData: MasterData
 }
 
 async function fetchSeed(): Promise<DemoStore> {
   const base = import.meta.env.BASE_URL
   const portfolio: Portfolio = await fetch(`${base}data/portfolio.json`).then((r) => r.json())
+  const masterData: MasterData = await fetch(`${base}data/masterData.json`).then((r) => r.json())
   const entries = await Promise.all(
     portfolio.projectIds.map(async (id) => {
       const project: Project = await fetch(`${base}data/projects/${id}.json`).then((r) => r.json())
       return [id, project] as const
     }),
   )
-  return { portfolio, projects: Object.fromEntries(entries) }
+  return { portfolio, projects: Object.fromEntries(entries), masterData }
 }
 
 function readStore(): DemoStore | null {
@@ -95,11 +99,11 @@ export const localDemoClient: DataClient = {
       methodology: input.methodology,
       health: 'on_track',
       color: input.color,
+      ownerTeamId: input.ownerTeamId,
+      assignments: input.managerId ? [{ personId: input.managerId, role: PM_ROLE_KEY }] : [],
       overview: {
         objective: input.objective,
         sponsor: input.sponsor,
-        manager: input.manager,
-        members: [],
         startDate: input.startDate,
         endDate: input.endDate,
       },
@@ -116,6 +120,18 @@ export const localDemoClient: DataClient = {
     store.portfolio.projectIds.push(id)
     writeStore(store)
     return project
+  },
+
+  async getMasterData() {
+    const store = await getStore()
+    return store.masterData
+  },
+
+  async saveMasterData(data) {
+    const store = await getStore()
+    store.masterData = data
+    writeStore(store)
+    return data
   },
 
   async resetDemoData() {

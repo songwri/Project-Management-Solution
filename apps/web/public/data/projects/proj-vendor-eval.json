@@ -5,11 +5,11 @@
   "methodology": "hybrid",
   "health": "off_track",
   "color": "#dc2626",
+  "ownerTeamId": "team-biz-purchase",
+  "assignments": [{ "personId": "p-bae-sujin", "role": "pm" }],
   "overview": {
     "objective": "협력사 정기 평가 프로세스를 표준화하고 자동 채점 체계 도입",
     "sponsor": "구매팀장 강수정",
-    "manager": "배수진",
-    "members": ["배수진"],
     "startDate": "2026-05-04",
     "endDate": "2026-09-30",
     "background": "예산 재검토로 인해 6월부터 일시 보류 중"
@@ -20,8 +20,8 @@
     "plannedDeliverables": ["평가 기준서", "자동 채점 시트"]
   },
   "schedule": [
-    { "id": "t1", "name": "현행 프로세스 분석", "start": "2026-05-04", "end": "2026-05-22", "progress": 100, "category": "task" },
-    { "id": "t2", "name": "평가 기준 표준화(보류)", "start": "2026-06-01", "end": "2026-06-26", "progress": 20, "category": "task", "kanbanStatus": "todo", "storyPoints": 5, "sprintId": "sprint-1" }
+    { "id": "t1", "name": "현행 프로세스 분석", "start": "2026-05-04", "end": "2026-05-22", "progress": 100, "category": "task", "assignee": "p-bae-sujin" },
+    { "id": "t2", "name": "평가 기준 표준화(보류)", "start": "2026-06-01", "end": "2026-06-26", "progress": 20, "category": "task", "assignee": "p-bae-sujin", "kanbanStatus": "todo", "storyPoints": 5, "sprintId": "sprint-1" }
   ],
   "sprints": [
     { "id": "sprint-1", "name": "Sprint 1 (보류)", "start": "2026-06-01", "end": "2026-06-14", "storyPointsPlanned": 8 }
