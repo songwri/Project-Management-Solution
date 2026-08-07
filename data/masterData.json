@@ -1,0 +1,46 @@
+{
+  "teams": [
+    { "id": "team-dev", "name": "개발본부" },
+    { "id": "team-dev-fe", "name": "프론트엔드팀", "parentTeamId": "team-dev" },
+    { "id": "team-dev-be", "name": "백엔드팀", "parentTeamId": "team-dev" },
+    { "id": "team-biz", "name": "경영지원본부" },
+    { "id": "team-biz-hr", "name": "인사팀", "parentTeamId": "team-biz" },
+    { "id": "team-biz-purchase", "name": "구매팀", "parentTeamId": "team-biz" },
+    { "id": "team-biz-strategy", "name": "전략기획팀", "parentTeamId": "team-biz" }
+  ],
+  "people": [
+    { "id": "p-park-seoyeon", "name": "박서연", "teamId": "team-dev-be", "title": "책임" },
+    { "id": "p-lee-junho", "name": "이준호", "teamId": "team-dev-fe", "title": "선임" },
+    { "id": "p-choi-mina", "name": "최민아", "teamId": "team-dev-be", "title": "책임" },
+    { "id": "p-jung-haneul", "name": "정하늘", "teamId": "team-dev-fe", "title": "선임" },
+    { "id": "p-kim-minjae", "name": "김민재", "teamId": "team-dev-fe", "title": "사원" },
+    { "id": "p-cho-hyunwoo", "name": "조현우", "teamId": "team-biz", "title": "매니저" },
+    { "id": "p-bae-sujin", "name": "배수진", "teamId": "team-biz-purchase", "title": "사원" }
+  ],
+  "statuses": [
+    { "key": "planning", "label": "기획" },
+    { "key": "in_progress", "label": "진행중" },
+    { "key": "closing", "label": "마감 진행중" },
+    { "key": "closed", "label": "완료" },
+    { "key": "on_hold", "label": "보류" }
+  ],
+  "methodologies": [
+    { "key": "waterfall", "label": "Waterfall" },
+    { "key": "agile", "label": "Agile" },
+    { "key": "hybrid", "label": "Hybrid" }
+  ],
+  "healthLevels": [
+    { "key": "on_track", "label": "정상" },
+    { "key": "at_risk", "label": "주의" },
+    { "key": "off_track", "label": "위험" }
+  ],
+  "projectRoles": [
+    { "key": "pm", "label": "PM" },
+    { "key": "member", "label": "멤버" },
+    { "key": "reviewer", "label": "리뷰어" }
+  ],
+  "overtimeLogs": [
+    { "id": "ot-1", "personId": "p-jung-haneul", "month": "2026-08", "hours": 26, "note": "CRM 모바일 UI + 근태관리 앱 킥오프 병행" },
+    { "id": "ot-2", "personId": "p-choi-mina", "month": "2026-08", "hours": 12, "note": "데이터 마이그레이션 스크립트 작업" }
+  ]
+}

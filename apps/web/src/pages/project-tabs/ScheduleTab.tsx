@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { Project } from '../../types'
+import { personLabel } from '../../masterData'
+import { useMasterData } from '../../lib/MasterDataContext'
 import { AppCalendar } from '../../components/AppCalendar'
 import { GanttChart, type GanttItem } from '../../components/GanttChart'
 import { KanbanBoard } from '../../components/KanbanBoard'
@@ -11,6 +13,7 @@ import { projectScheduleToEvents } from '../../lib/calendarEvents'
 type ViewMode = 'calendar' | 'gantt' | 'kanban'
 
 export function ScheduleTab({ project, onSave }: { project: Project; onSave: (p: Project) => void }) {
+  const { masterData } = useMasterData()
   const isAgileAware = project.methodology === 'agile' || project.methodology === 'hybrid'
   const [view, setView] = useState<ViewMode>(project.methodology === 'agile' ? 'kanban' : 'calendar')
   const [adding, setAdding] = useState(false)
@@ -87,7 +90,9 @@ export function ScheduleTab({ project, onSave }: { project: Project; onSave: (p:
                   {task.start}
                   {task.category !== 'milestone' && ` ~ ${task.end}`}
                 </td>
-                <td className="px-4 py-2.5 text-slate-500">{task.assignee ?? '-'}</td>
+                <td className="px-4 py-2.5 text-slate-500">
+                  {task.assignee ? personLabel(masterData.people, task.assignee) : '-'}
+                </td>
                 <td className="px-4 py-2.5 text-slate-500">{task.progress}%</td>
               </tr>
             ))}

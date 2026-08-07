@@ -1,12 +1,16 @@
 import { Link } from 'react-router-dom'
-import { overallProgress, openRiskCount, type Project } from '../types'
+import { overallProgress, openRiskCount, projectManagerAssignment, type Project } from '../types'
+import { personLabel } from '../masterData'
+import { useMasterData } from '../lib/MasterDataContext'
 import { StatusBadge } from './StatusBadge'
 import { MethodologyBadge } from './MethodologyBadge'
 import { HealthDot } from './HealthDot'
 
 export function ProjectCard({ project }: { project: Project }) {
+  const { masterData } = useMasterData()
   const progress = overallProgress(project)
   const risks = openRiskCount(project)
+  const manager = projectManagerAssignment(project)
   return (
     <Link
       to={`/projects/${project.id}`}
@@ -31,7 +35,7 @@ export function ProjectCard({ project }: { project: Project }) {
         <span>
           {project.overview.startDate} ~ {project.overview.endDate}
         </span>
-        <span>{project.overview.manager} 담당</span>
+        <span>{manager ? `${personLabel(masterData.people, manager.personId)} 담당` : '담당자 미지정'}</span>
       </div>
       <div className="mt-3">
         <div className="h-1.5 w-full rounded-full bg-slate-100">

@@ -1,4 +1,6 @@
 import { KANBAN_COLUMNS, type ScheduleTask } from '../types'
+import { personLabel } from '../masterData'
+import { useMasterData } from '../lib/MasterDataContext'
 
 interface Props {
   tasks: ScheduleTask[]
@@ -6,6 +8,7 @@ interface Props {
 }
 
 export function KanbanBoard({ tasks, color }: Props) {
+  const { masterData } = useMasterData()
   const workItems = tasks.filter((t) => t.category !== 'meeting')
 
   if (workItems.length === 0) {
@@ -34,7 +37,7 @@ export function KanbanBoard({ tasks, color }: Props) {
                     {task.name}
                   </p>
                   <div className="mt-2 flex items-center justify-between text-xs text-slate-400">
-                    <span>{task.assignee ?? '미배정'}</span>
+                    <span>{task.assignee ? personLabel(masterData.people, task.assignee) : '미배정'}</span>
                     {typeof task.storyPoints === 'number' && (
                       <span
                         className="rounded-full px-1.5 py-0.5 font-semibold text-white"

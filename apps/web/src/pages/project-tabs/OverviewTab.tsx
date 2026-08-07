@@ -1,8 +1,11 @@
 import { useState } from 'react'
 import type { HealthStatus, Methodology, Project, ProjectStatus } from '../../types'
-import { HEALTH_LABEL, METHODOLOGY_LABEL, PROJECT_STATUS_LABEL, budgetConsumptionPct } from '../../types'
+import { DEFAULT_HEALTH_LEVELS, DEFAULT_METHODOLOGIES, DEFAULT_STATUSES, budgetConsumptionPct, labelFrom } from '../../types'
+import { PM_ROLE_KEY, findPerson, findTeam } from '../../masterData'
+import { useMasterData } from '../../lib/MasterDataContext'
 import { Modal } from '../../components/Modal'
 import { ProjectOverviewForm } from '../../components/ProjectOverviewForm'
+import { AssignmentForm } from '../../components/AssignmentForm'
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
@@ -26,6 +29,17 @@ function BulletList({ items }: { items: string[] }) {
 
 export function OverviewTab({ project, onSave }: { project: Project; onSave: (p: Project) => void }) {
   const [editing, setEditing] = useState(false)
+  const [addingAssignment, setAddingAssignment] = useState(false)
+  const { masterData } = useMasterData()
+
+  const statuses = masterData.statuses.length > 0 ? masterData.statuses : DEFAULT_STATUSES
+  const methodologies = masterData.methodologies.length > 0 ? masterData.methodologies : DEFAULT_METHODOLOGIES
+  const healthLevels = masterData.healthLevels.length > 0 ? masterData.healthLevels : DEFAULT_HEALTH_LEVELS
+  const roles = masterData.projectRoles
+
+  function removeAssignment(personId: string) {
+    onSave({ ...project, assignments: project.assignments.filter((a) => a.personId !== personId) })
+  }
 
   return (
     <div className="space-y-6">
@@ -38,9 +52,9 @@ export function OverviewTab({ project, onSave }: { project: Project; onSave: (p:
               onChange={(e) => onSave({ ...project, status: e.target.value as ProjectStatus })}
               className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm"
             >
-              {(Object.keys(PROJECT_STATUS_LABEL) as ProjectStatus[]).map((s) => (
-                <option key={s} value={s}>
-                  {PROJECT_STATUS_LABEL[s]}
+              {statuses.map((s) => (
+                <option key={s.key} value={s.key}>
+                  {s.label}
                 </option>
               ))}
             </select>
@@ -52,9 +66,9 @@ export function OverviewTab({ project, onSave }: { project: Project; onSave: (p:
               onChange={(e) => onSave({ ...project, methodology: e.target.value as Methodology })}
               className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm"
             >
-              {(Object.keys(METHODOLOGY_LABEL) as Methodology[]).map((m) => (
-                <option key={m} value={m}>
-                  {METHODOLOGY_LABEL[m]}
+              {methodologies.map((m) => (
+                <option key={m.key} value={m.key}>
+                  {m.label}
                 </option>
               ))}
             </select>
@@ -66,9 +80,9 @@ export function OverviewTab({ project, onSave }: { project: Project; onSave: (p:
               onChange={(e) => onSave({ ...project, health: e.target.value as HealthStatus })}
               className="rounded-lg border border-slate-300 px-2.5 py-1.5 text-sm"
             >
-              {(Object.keys(HEALTH_LABEL) as HealthStatus[]).map((h) => (
-                <option key={h} value={h}>
-                  {HEALTH_LABEL[h]}
+              {healthLevels.map((h) => (
+                <option key={h.key} value={h.key}>
+                  {h.label}
                 </option>
               ))}
             </select>
@@ -89,8 +103,6 @@ export function OverviewTab({ project, onSave }: { project: Project; onSave: (p:
           <InfoRow label="목표" value={project.overview.objective} />
           <InfoRow label="배경" value={project.overview.background ?? ''} />
           <InfoRow label="스폰서" value={project.overview.sponsor} />
-          <InfoRow label="PM" value={project.overview.manager} />
-          <InfoRow label="팀원" value={project.overview.members.join(', ')} />
           <InfoRow label="예산" value={project.overview.budget ?? ''} />
           <InfoRow label="기간" value={`${project.overview.startDate} ~ ${project.overview.endDate}`} />
         </dl>
@@ -112,6 +124,53 @@ export function OverviewTab({ project, onSave }: { project: Project; onSave: (p:
               />
             </div>
           </div>
+        )}
+      </section>
+
+      <section className="rounded-xl border border-slate-200 bg-white p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-slate-700">담당자</h2>
+          <button
+            type="button"
+            onClick={() => setAddingAssignment(true)}
+            className="text-xs font-medium text-slate-500 hover:text-slate-800 underline"
+          >
+            + 담당자 추가
+          </button>
+        </div>
+        {project.assignments.length === 0 ? (
+          <p className="text-sm text-slate-400">등록된 담당자가 없습니다.</p>
+        ) : (
+          <ul className="space-y-2">
+            {project.assignments.map((a) => {
+              const person = findPerson(masterData.people, a.personId)
+              const team = person ? findTeam(masterData.teams, person.teamId) : undefined
+              return (
+                <li key={a.personId} className="flex items-center justify-between text-sm">
+                  <span>
+                    <span className="font-medium text-slate-800">{person?.name ?? '알 수 없음'}</span>
+                    {person && <span className="text-slate-400"> · {team?.name ?? '-'} · {person.title}</span>}
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                        a.role === PM_ROLE_KEY ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      {labelFrom(roles, a.role)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => removeAssignment(a.personId)}
+                      className="text-xs text-slate-400 hover:text-rose-600"
+                    >
+                      제거
+                    </button>
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
         )}
       </section>
 
@@ -138,9 +197,24 @@ export function OverviewTab({ project, onSave }: { project: Project; onSave: (p:
           <ProjectOverviewForm
             project={project}
             onCancel={() => setEditing(false)}
-            onSubmit={(overview, scope) => {
-              onSave({ ...project, overview, scope })
+            onSubmit={(overview, scope, budgetTracking) => {
+              onSave({ ...project, overview, scope, budgetTracking })
               setEditing(false)
+            }}
+          />
+        </Modal>
+      )}
+
+      {addingAssignment && (
+        <Modal title="담당자 추가" onClose={() => setAddingAssignment(false)}>
+          <AssignmentForm
+            people={masterData.people}
+            roles={roles.length > 0 ? roles : [{ key: 'pm', label: 'PM' }, { key: 'member', label: '멤버' }]}
+            excludePersonIds={project.assignments.map((a) => a.personId)}
+            onCancel={() => setAddingAssignment(false)}
+            onSubmit={(assignment) => {
+              onSave({ ...project, assignments: [...project.assignments, assignment] })
+              setAddingAssignment(false)
             }}
           />
         </Modal>

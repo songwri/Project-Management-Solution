@@ -1,10 +1,10 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { dataClient } from '../lib/dataClient'
-import { METHODOLOGY_LABEL, type Methodology } from '../types'
+import { DEFAULT_METHODOLOGIES, type Methodology } from '../types'
+import { useMasterData } from '../lib/MasterDataContext'
 
 const COLORS = ['#2563eb', '#059669', '#d97706', '#7c3aed', '#dc2626', '#0891b2', '#db2777']
-const METHODOLOGIES: Methodology[] = ['waterfall', 'agile', 'hybrid']
 
 const inputCls =
   'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none'
@@ -12,10 +12,14 @@ const labelCls = 'block text-xs font-medium text-slate-600 mb-1'
 
 export function NewProject() {
   const navigate = useNavigate()
+  const { masterData } = useMasterData()
+  const methodologies = masterData.methodologies.length > 0 ? masterData.methodologies : DEFAULT_METHODOLOGIES
+
   const [name, setName] = useState('')
   const [objective, setObjective] = useState('')
   const [sponsor, setSponsor] = useState('')
-  const [manager, setManager] = useState('')
+  const [managerId, setManagerId] = useState('')
+  const [ownerTeamId, setOwnerTeamId] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [color, setColor] = useState(COLORS[0])
@@ -32,7 +36,8 @@ export function NewProject() {
         name,
         objective,
         sponsor,
-        manager,
+        managerId,
+        ownerTeamId: ownerTeamId || undefined,
         startDate,
         endDate,
         color,
@@ -76,18 +81,18 @@ export function NewProject() {
         <div>
           <label className={labelCls}>방법론</label>
           <div className="flex gap-2">
-            {METHODOLOGIES.map((m) => (
+            {methodologies.map((m) => (
               <button
-                key={m}
+                key={m.key}
                 type="button"
-                onClick={() => setMethodology(m)}
+                onClick={() => setMethodology(m.key)}
                 className={`rounded-lg border px-3.5 py-2 text-sm font-medium ${
-                  methodology === m
+                  methodology === m.key
                     ? 'border-slate-900 bg-slate-900 text-white'
                     : 'border-slate-300 text-slate-600 hover:bg-slate-100'
                 }`}
               >
-                {METHODOLOGY_LABEL[m]}
+                {m.label}
               </button>
             ))}
           </div>
@@ -99,8 +104,26 @@ export function NewProject() {
           </div>
           <div>
             <label className={labelCls}>PM(담당자)</label>
-            <input className={inputCls} value={manager} onChange={(e) => setManager(e.target.value)} />
+            <select className={inputCls} value={managerId} onChange={(e) => setManagerId(e.target.value)}>
+              <option value="">선택 안 함</option>
+              {masterData.people.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} ({p.title})
+                </option>
+              ))}
+            </select>
           </div>
+        </div>
+        <div>
+          <label className={labelCls}>소속 팀 (포트폴리오 조직 필터용)</label>
+          <select className={inputCls} value={ownerTeamId} onChange={(e) => setOwnerTeamId(e.target.value)}>
+            <option value="">선택 안 함</option>
+            {masterData.teams.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>

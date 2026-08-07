@@ -24,6 +24,8 @@ All endpoints require `Authorization: Bearer <ACCESS_TOKEN>`.
 | GET    | `/api/projects/:id`   | Returns `data/projects/:id.json`          |
 | PUT    | `/api/projects/:id`   | Upserts a project (full object body)      |
 | POST   | `/api/projects`       | Creates a project, registers it in the portfolio |
+| GET    | `/api/master-data`    | Returns `data/masterData.json` (teams, people, taxonomy labels) |
+| PUT    | `/api/master-data`    | Replaces `data/masterData.json` (full object body) |
 
 ## One-time setup
 

@@ -5,11 +5,15 @@
   "methodology": "waterfall",
   "health": "at_risk",
   "color": "#d97706",
+  "ownerTeamId": "team-dev-be",
+  "assignments": [
+    { "personId": "p-choi-mina", "role": "pm" },
+    { "personId": "p-cho-hyunwoo", "role": "member" },
+    { "personId": "p-bae-sujin", "role": "member" }
+  ],
   "overview": {
     "objective": "부서별 산재된 데이터를 통합하여 셀프서비스 리포팅 환경 제공",
     "sponsor": "전략기획실장 한지민",
-    "manager": "최민아",
-    "members": ["최민아", "조현우", "배수진"],
     "startDate": "2026-02-02",
     "endDate": "2026-08-14",
     "budget": "2억원"
@@ -25,7 +29,7 @@
     { "id": "t3", "name": "BI 대시보드 개발", "start": "2026-05-11", "end": "2026-06-26", "progress": 100, "category": "task", "dependsOn": ["t2"] },
     { "id": "t4", "name": "부서별 파일럿 적용", "start": "2026-06-29", "end": "2026-07-24", "progress": 100, "category": "task" },
     { "id": "t5", "name": "전사 오픈", "start": "2026-07-27", "end": "2026-07-27", "progress": 100, "category": "milestone" },
-    { "id": "t6", "name": "최종 결과보고 및 산출물 등록", "start": "2026-08-10", "end": "2026-08-14", "progress": 60, "category": "task" }
+    { "id": "t6", "name": "최종 결과보고 및 산출물 등록", "start": "2026-08-10", "end": "2026-08-14", "progress": 60, "category": "task", "assignee": "p-choi-mina" }
   ],
   "sprints": [],
   "risks": [
