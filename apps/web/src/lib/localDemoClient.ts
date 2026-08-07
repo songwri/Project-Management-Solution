@@ -8,12 +8,28 @@ import type { DataClient, NewProjectInput } from './dataClient'
 // any edits to localStorage only. Nothing here ever leaves the browser.
 // This lets anyone explore the full app with zero backend setup.
 
-const STORAGE_KEY = 'pm-solution-demo-store-v1'
+// Bump this suffix whenever the DemoStore shape changes (new required
+// fields, etc.) so browsers holding an older cached shape transparently
+// refetch the seed instead of crashing on missing fields.
+const STORAGE_KEY = 'pm-solution-demo-store-v2'
 
 interface DemoStore {
   portfolio: Portfolio
   projects: Record<string, Project>
   masterData: MasterData
+}
+
+function isValidStore(value: unknown): value is DemoStore {
+  if (!value || typeof value !== 'object') return false
+  const store = value as Partial<DemoStore>
+  return Boolean(
+    store.portfolio &&
+      store.projects &&
+      store.masterData &&
+      Array.isArray(store.masterData.statuses) &&
+      Array.isArray(store.masterData.people) &&
+      Array.isArray(store.masterData.teams),
+  )
 }
 
 async function fetchSeed(): Promise<DemoStore> {
@@ -31,7 +47,20 @@ async function fetchSeed(): Promise<DemoStore> {
 
 function readStore(): DemoStore | null {
   const raw = localStorage.getItem(STORAGE_KEY)
-  return raw ? (JSON.parse(raw) as DemoStore) : null
+  if (!raw) return null
+  try {
+    const parsed: unknown = JSON.parse(raw)
+    if (!isValidStore(parsed)) {
+      // Shape doesn't match what this build expects (e.g. leftover data
+      // from an older version of the app) -- discard and refetch seed.
+      localStorage.removeItem(STORAGE_KEY)
+      return null
+    }
+    return parsed
+  } catch {
+    localStorage.removeItem(STORAGE_KEY)
+    return null
+  }
 }
 
 function writeStore(store: DemoStore): void {
