@@ -2,6 +2,8 @@
   "id": "proj-data-platform",
   "name": "사내 데이터 분석 플랫폼 구축",
   "status": "closing",
+  "methodology": "waterfall",
+  "health": "at_risk",
   "color": "#d97706",
   "overview": {
     "objective": "부서별 산재된 데이터를 통합하여 셀프서비스 리포팅 환경 제공",
@@ -25,6 +27,18 @@
     { "id": "t5", "name": "전사 오픈", "start": "2026-07-27", "end": "2026-07-27", "progress": 100, "category": "milestone" },
     { "id": "t6", "name": "최종 결과보고 및 산출물 등록", "start": "2026-08-10", "end": "2026-08-14", "progress": 60, "category": "task" }
   ],
+  "sprints": [],
+  "risks": [
+    {
+      "id": "risk-1",
+      "description": "일부 부서 데이터 연동 지연으로 최종 보고서 작성이 늦어질 수 있음",
+      "severity": "high",
+      "owner": "최민아",
+      "resolved": false,
+      "createdAt": "2026-08-01"
+    }
+  ],
+  "budgetTracking": { "planned": 200000000, "spent": 196000000 },
   "meetingMinutes": [
     {
       "id": "m1",

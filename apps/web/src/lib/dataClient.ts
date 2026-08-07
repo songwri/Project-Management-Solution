@@ -1,4 +1,4 @@
-import type { Project, Portfolio } from '../types'
+import type { Methodology, Project, Portfolio } from '../types'
 import { IS_DEMO_MODE } from './config'
 import { localDemoClient } from './localDemoClient'
 import { remoteClient } from './remoteClient'
@@ -11,6 +11,7 @@ export interface NewProjectInput {
   manager: string
   startDate: string
   endDate: string
+  methodology: Methodology
 }
 
 export interface DataClient {

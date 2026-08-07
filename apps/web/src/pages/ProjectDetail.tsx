@@ -1,19 +1,23 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { dataClient } from '../lib/dataClient'
-import type { Project } from '../types'
+import { openRiskCount, type Project } from '../types'
 import { StatusBadge } from '../components/StatusBadge'
+import { MethodologyBadge } from '../components/MethodologyBadge'
+import { HealthDot } from '../components/HealthDot'
 import { OverviewTab } from './project-tabs/OverviewTab'
 import { ScheduleTab } from './project-tabs/ScheduleTab'
 import { MeetingsTab } from './project-tabs/MeetingsTab'
 import { DeliverablesTab } from './project-tabs/DeliverablesTab'
+import { RisksTab } from './project-tabs/RisksTab'
 
-type TabKey = 'overview' | 'schedule' | 'meetings' | 'deliverables'
+type TabKey = 'overview' | 'schedule' | 'meetings' | 'risks' | 'deliverables'
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'overview', label: '개요 · 범위' },
   { key: 'schedule', label: '일정' },
   { key: 'meetings', label: '회의록' },
+  { key: 'risks', label: '리스크' },
   { key: 'deliverables', label: '산출물 · 종료' },
 ]
 
@@ -49,6 +53,8 @@ export function ProjectDetail() {
           <span className="h-3 w-3 rounded-full" style={{ backgroundColor: project.color }} />
           <h1 className="text-xl font-semibold text-slate-900">{project.name}</h1>
           <StatusBadge status={project.status} />
+          <MethodologyBadge methodology={project.methodology} />
+          <HealthDot health={project.health} withLabel />
         </div>
         <p className="mt-1 text-sm text-slate-500">{project.overview.objective}</p>
       </div>
@@ -72,6 +78,11 @@ export function ProjectDetail() {
             }`}
           >
             {t.label}
+            {t.key === 'risks' && openRiskCount(project) > 0 && (
+              <span className="ml-1.5 rounded-full bg-rose-100 text-rose-700 px-1.5 py-0.5 text-[11px] font-semibold">
+                {openRiskCount(project)}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -79,6 +90,7 @@ export function ProjectDetail() {
       {tab === 'overview' && <OverviewTab project={project} onSave={persist} />}
       {tab === 'schedule' && <ScheduleTab project={project} onSave={persist} />}
       {tab === 'meetings' && <MeetingsTab project={project} onSave={persist} />}
+      {tab === 'risks' && <RisksTab project={project} onSave={persist} />}
       {tab === 'deliverables' && <DeliverablesTab project={project} onSave={persist} />}
     </div>
   )

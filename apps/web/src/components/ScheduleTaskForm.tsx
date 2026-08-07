@@ -1,23 +1,28 @@
 import { useState, type FormEvent } from 'react'
-import type { ScheduleTask, TaskCategory } from '../types'
+import { KANBAN_COLUMNS, type KanbanStatus, type Methodology, type ScheduleTask, type TaskCategory } from '../types'
 
 const inputCls =
   'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none'
 const labelCls = 'block text-xs font-medium text-slate-600 mb-1'
 
 export function ScheduleTaskForm({
+  methodology,
   onSubmit,
   onCancel,
 }: {
+  methodology: Methodology
   onSubmit: (task: ScheduleTask) => void
   onCancel: () => void
 }) {
+  const isAgileAware = methodology === 'agile' || methodology === 'hybrid'
   const [name, setName] = useState('')
   const [category, setCategory] = useState<TaskCategory>('task')
   const [start, setStart] = useState('')
   const [end, setEnd] = useState('')
   const [assignee, setAssignee] = useState('')
   const [progress, setProgress] = useState(0)
+  const [kanbanStatus, setKanbanStatus] = useState<KanbanStatus>('todo')
+  const [storyPoints, setStoryPoints] = useState('')
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -30,6 +35,9 @@ export function ScheduleTaskForm({
       end: category === 'milestone' ? start : end,
       progress,
       assignee: assignee || undefined,
+      ...(isAgileAware
+        ? { kanbanStatus, storyPoints: storyPoints ? Number(storyPoints) : undefined }
+        : {}),
     })
   }
 
@@ -80,6 +88,34 @@ export function ScheduleTaskForm({
           </div>
         )}
       </div>
+      {isAgileAware && (
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className={labelCls}>칸반 상태</label>
+            <select
+              className={inputCls}
+              value={kanbanStatus}
+              onChange={(e) => setKanbanStatus(e.target.value as KanbanStatus)}
+            >
+              {KANBAN_COLUMNS.map((c) => (
+                <option key={c.status} value={c.status}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className={labelCls}>스토리포인트</label>
+            <input
+              type="number"
+              min={0}
+              className={inputCls}
+              value={storyPoints}
+              onChange={(e) => setStoryPoints(e.target.value)}
+            />
+          </div>
+        </div>
+      )}
       <div>
         <label className={labelCls}>진행률 ({progress}%)</label>
         <input

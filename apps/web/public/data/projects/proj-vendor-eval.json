@@ -2,6 +2,8 @@
   "id": "proj-vendor-eval",
   "name": "협력사 평가 시스템 개선",
   "status": "on_hold",
+  "methodology": "hybrid",
+  "health": "off_track",
   "color": "#dc2626",
   "overview": {
     "objective": "협력사 정기 평가 프로세스를 표준화하고 자동 채점 체계 도입",
@@ -19,8 +21,22 @@
   },
   "schedule": [
     { "id": "t1", "name": "현행 프로세스 분석", "start": "2026-05-04", "end": "2026-05-22", "progress": 100, "category": "task" },
-    { "id": "t2", "name": "평가 기준 표준화(보류)", "start": "2026-06-01", "end": "2026-06-26", "progress": 20, "category": "task" }
+    { "id": "t2", "name": "평가 기준 표준화(보류)", "start": "2026-06-01", "end": "2026-06-26", "progress": 20, "category": "task", "kanbanStatus": "todo", "storyPoints": 5, "sprintId": "sprint-1" }
   ],
+  "sprints": [
+    { "id": "sprint-1", "name": "Sprint 1 (보류)", "start": "2026-06-01", "end": "2026-06-14", "storyPointsPlanned": 8 }
+  ],
+  "risks": [
+    {
+      "id": "risk-1",
+      "description": "예산 재검토 결과에 따라 프로젝트가 취소될 수 있음",
+      "severity": "high",
+      "owner": "배수진",
+      "resolved": false,
+      "createdAt": "2026-06-10"
+    }
+  ],
+  "budgetTracking": { "planned": 30000000, "spent": 4000000 },
   "meetingMinutes": [
     {
       "id": "m1",
