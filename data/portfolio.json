@@ -6,6 +6,7 @@
     "proj-mobile-app",
     "proj-data-platform",
     "proj-office-move",
-    "proj-vendor-eval"
+    "proj-vendor-eval",
+    "proj-wearable-barcode-scan"
   ]
 }
